@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TopicController;
@@ -17,6 +17,9 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
+
+    Route::get('/verify', [TwoFactorController::class, 'show'])->name('two-factor.show');
+    Route::post('/verify', [TwoFactorController::class, 'store'])->name('two-factor.store');
 });
 
 Route::middleware('auth')->group(function () {
