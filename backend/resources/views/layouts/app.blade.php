@@ -16,8 +16,16 @@
             </div>
 
             <nav class="flex items-center gap-3 text-sm">
-                <a href="#" class="text-neutral-500 hover:text-black transition">Войти</a>
-                <a href="#" class="bg-black text-white font-medium px-3 py-1.5 rounded hover:bg-neutral-800 transition">Регистрация</a>
+                @auth
+                    <span class="text-neutral-500">{{ auth()->user()->name }}</span>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="text-neutral-500 hover:text-black transition">Выйти</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="text-neutral-500 hover:text-black transition">Войти</a>
+                    <a href="{{ route('register') }}" class="bg-black text-white font-medium px-3 py-1.5 rounded hover:bg-neutral-800 transition">Регистрация</a>
+                @endauth
             </nav>
         </div>
     </header>
