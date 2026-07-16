@@ -1,0 +1,57 @@
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: ../docker/php/Dockerfile
+    container_name: forumhub_app
+    volumes:
+      - ./backend:/var/www
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - forumhub
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: forumhub_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - forumhub
+
+  mysql:
+    image: mysql:8.0
+    container_name: forumhub_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: forumhub
+      MYSQL_USER: forumhub
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - forumhub_mysql_data:/var/lib/mysql
+    networks:
+      - forumhub
+
+  redis:
+    image: redis:7-alpine
+    container_name: forumhub_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - forumhub
+
+networks:
+  forumhub:
+    driver: bridge
+
+volumes:
+  forumhub_mysql_data:
