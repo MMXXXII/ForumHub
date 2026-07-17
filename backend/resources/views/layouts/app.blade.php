@@ -16,6 +16,20 @@
             </div>
 
             <nav class="flex items-center gap-3 text-sm">
+                <div class="relative group hidden sm:block">
+                    <button type="button" class="text-neutral-500 hover:text-black transition inline-flex items-center gap-1">
+                        Соц. сети
+                        <span class="text-[10px] leading-none">&#9662;</span>
+                    </button>
+                    <div class="hidden group-hover:block absolute right-0 top-full pt-2 z-50">
+                        <div class="bg-white border border-neutral-200 rounded-lg shadow-sm py-1 min-w-[180px]">
+                            <a href="https://t.me/MMXXXII" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">Telegram</a>
+                            <a href="https://vk.ru/mmxxxii" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">ВКонтакте</a>
+                            <a href="https://github.com/MMXXXII" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+
                 @auth
                     @if (auth()->user()->isModerator())
                         <a href="{{ route('admin.dashboard') }}" class="text-neutral-500 hover:text-black transition">Панель</a>

@@ -12,6 +12,7 @@ class HomeController extends Controller
     {
         $topics = Topic::withCount('posts')
             ->with(['user', 'category'])
+            ->withMax('posts', 'created_at')
             ->orderByDesc('is_pinned')
             ->orderByDesc('created_at')
             ->paginate(15);

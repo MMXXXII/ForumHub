@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
@@ -15,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/c/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 Route::get('/t/{topic:slug}', [TopicController::class, 'show'])->name('topics.show');
+Route::post('/t/{topic:slug}/reply', [PostController::class, 'store'])
+    ->middleware('auth')
+    ->name('posts.store');
+Route::delete('/posts/{post}', [PostController::class, 'destroy'])->middleware('auth')->name('posts.destroy');
+Route::delete('/t/{topic:slug}', [TopicController::class, 'destroy'])->middleware('auth')->name('topics.destroy');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
