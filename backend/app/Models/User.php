@@ -29,7 +29,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_expires_at' => 'datetime',
         ];
-    }
+    } 
 
     public function topics()
     {
@@ -40,5 +40,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isModerator(): bool
+    {
+        return in_array($this->role, ['moderator', 'admin'], true);
+    }
 }
+
 

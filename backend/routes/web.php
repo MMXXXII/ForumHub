@@ -1,4 +1,9 @@
 <?php
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Admin\TopicController as AdminTopicController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
@@ -24,4 +29,22 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+});
+
+Route::middleware(['auth', 'role:admin,moderator'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::patch('/topics/{topic}/pin', [AdminTopicController::class, 'togglePin'])->name('topics.pin');
+    Route::patch('/topics/{topic}/lock', [AdminTopicController::class, 'toggleLock'])->name('topics.lock');
+    Route::patch('/posts/{post}/hide', [AdminPostController::class, 'toggleHide'])->name('posts.hide');
+
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+
+        Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+        Route::patch('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+    });
 });

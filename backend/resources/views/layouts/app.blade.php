@@ -17,6 +17,9 @@
 
             <nav class="flex items-center gap-3 text-sm">
                 @auth
+                    @if (auth()->user()->isModerator())
+                        <a href="{{ route('admin.dashboard') }}" class="text-neutral-500 hover:text-black transition">Панель</a>
+                    @endif
                     <span class="text-neutral-500">{{ auth()->user()->name }}</span>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
