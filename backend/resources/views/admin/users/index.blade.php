@@ -1,14 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <h1 class="text-xl font-semibold text-black mb-6">Пользователи</h1>
-
-@if (session('status'))
-    <div class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">{{ session('status') }}</div>
-@endif
-@if ($errors->any())
-    <div class="mb-4 text-sm text-red-600">{{ $errors->first() }}</div>
-@endif
 
 <div class="border border-neutral-200 rounded-lg overflow-hidden">
     @foreach ($users as $user)

@@ -7,6 +7,13 @@ use App\Models\Post;
 
 class PostController extends Controller
 {
+    public function index()
+    {
+        $posts = Post::with(['user', 'topic'])->orderByDesc('created_at')->paginate(30);
+
+        return view('admin.posts.index', compact('posts'));
+    }
+
     public function toggleHide(Post $post)
     {
         $post->update(['is_hidden' => ! $post->is_hidden]);

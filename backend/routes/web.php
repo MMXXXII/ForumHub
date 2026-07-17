@@ -34,11 +34,16 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin,moderator'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/topics', [AdminTopicController::class, 'index'])->name('topics.index');
     Route::patch('/topics/{topic}/pin', [AdminTopicController::class, 'togglePin'])->name('topics.pin');
     Route::patch('/topics/{topic}/lock', [AdminTopicController::class, 'toggleLock'])->name('topics.lock');
+
+    Route::get('/posts', [AdminPostController::class, 'index'])->name('posts.index');
     Route::patch('/posts/{post}/hide', [AdminPostController::class, 'toggleHide'])->name('posts.hide');
 
     Route::middleware('role:admin')->group(function () {
+        Route::delete('/topics/{topic}', [AdminTopicController::class, 'destroy'])->name('topics.destroy');
+
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
 
