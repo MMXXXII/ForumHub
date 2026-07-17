@@ -35,13 +35,13 @@
     <div class="bg-white border border-neutral-200 rounded-lg p-4">
         <div class="text-sm font-medium text-black mb-3">Регистрации за 14 дней</div>
         <div class="h-56">
-            <canvas id="registrationsChart"></canvas>
+            <canvas id="registrationsChart" data-labels="{{ $chartLabels->toJson() }}" data-values="{{ $registrationsChart->toJson() }}"></canvas>
         </div>
     </div>
     <div class="bg-white border border-neutral-200 rounded-lg p-4">
         <div class="text-sm font-medium text-black mb-3">Сообщения за 14 дней</div>
         <div class="h-56">
-            <canvas id="postsChart"></canvas>
+            <canvas id="postsChart" data-labels="{{ $chartLabels->toJson() }}" data-values="{{ $postsChart->toJson() }}"></canvas>
         </div>
     </div>
 </div>
@@ -50,13 +50,13 @@
     <div class="bg-white border border-neutral-200 rounded-lg p-4">
         <div class="text-sm font-medium text-black mb-3">Темы по разделам</div>
         <div class="h-56">
-            <canvas id="categoriesChart"></canvas>
+            <canvas id="categoriesChart" data-labels="{{ $categoryStats->pluck('name')->toJson() }}" data-values="{{ $categoryStats->pluck('topics_count')->toJson() }}"></canvas>
         </div>
     </div>
     <div class="bg-white border border-neutral-200 rounded-lg p-4">
         <div class="text-sm font-medium text-black mb-3">Пользователи по ролям</div>
         <div class="h-56 flex items-center justify-center">
-            <canvas id="rolesChart"></canvas>
+            <canvas id="rolesChart" data-labels="{{ $roleStats->keys()->toJson() }}" data-values="{{ $roleStats->values()->toJson() }}"></canvas>
         </div>
     </div>
 </div>
