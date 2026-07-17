@@ -21,6 +21,9 @@ Route::post('/t/{topic:slug}/reply', [PostController::class, 'store'])
     ->name('posts.store');
 Route::delete('/posts/{post}', [PostController::class, 'destroy'])->middleware('auth')->name('posts.destroy');
 Route::delete('/t/{topic:slug}', [TopicController::class, 'destroy'])->middleware('auth')->name('topics.destroy');
+Route::get('/t/create/new', [TopicController::class, 'create'])->middleware('auth')->name('topics.create');
+Route::post('/t', [TopicController::class, 'store'])->middleware('auth')->name('topics.store');
+
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');

@@ -1,10 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="flex items-center gap-6 mb-6 text-sm text-neutral-500 border-b border-neutral-200 pb-4">
-    <div><span class="text-black font-semibold">{{ $stats['users'] }}</span> участников</div>
-    <div><span class="text-black font-semibold">{{ $stats['topics'] }}</span> тем</div>
-    <div><span class="text-black font-semibold">{{ $stats['posts'] }}</span> сообщений</div>
+<div class="flex items-center justify-between mb-6 border-b border-neutral-200 pb-4">
+    <div class="flex items-center gap-6 text-sm text-neutral-500">
+        <div><span class="text-black font-semibold">{{ $stats['users'] }}</span> участников</div>
+        <div><span class="text-black font-semibold">{{ $stats['topics'] }}</span> тем</div>
+        <div><span class="text-black font-semibold">{{ $stats['posts'] }}</span> сообщений</div>
+    </div>
+    @auth
+        <a href="{{ route('topics.create') }}" class="bg-black text-white text-sm rounded px-3 py-1.5 hover:bg-neutral-800 transition shrink-0">Создать тему</a>
+    @endauth
 </div>
 
 <div class="border border-neutral-200 rounded-lg overflow-hidden">

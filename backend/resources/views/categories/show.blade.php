@@ -1,10 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mb-6">
-    <a href="{{ route('home') }}" class="text-xs text-neutral-400 hover:text-black">&larr; Все разделы</a>
-    <h1 class="text-xl font-semibold text-black mt-1">{{ $category->name }}</h1>
-    <p class="text-sm text-neutral-500 mt-1">{{ $category->description }}</p>
+<div class="mb-6 flex items-start justify-between gap-4">
+    <div class="min-w-0">
+        <a href="{{ route('home') }}" class="text-xs text-neutral-400 hover:text-black">&larr; Все разделы</a>
+        <h1 class="text-xl font-semibold text-black mt-1">{{ $category->name }}</h1>
+        <p class="text-sm text-neutral-500 mt-1">{{ $category->description }}</p>
+    </div>
+    @auth
+        <a href="{{ route('topics.create', ['category' => $category->id]) }}" class="bg-black text-white text-sm rounded px-3 py-1.5 hover:bg-neutral-800 transition shrink-0 whitespace-nowrap">Создать тему</a>
+    @endauth
 </div>
 
 <div class="border border-neutral-200 rounded-lg overflow-hidden shadow-sm">

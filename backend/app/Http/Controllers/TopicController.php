@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Topic;
 use Illuminate\Http\Request;
+use App\Models\Category;
+use Illuminate\Support\Str;
+
 
 class TopicController extends Controller
 {
@@ -54,5 +57,42 @@ public function destroy(Request $request, Topic $topic)
     $topic->delete();
 
     return redirect()->route('categories.show', $category)->with('status', 'Тема удалена.');
+}
+
+public function create()
+{
+    $categories = Category::orderBy('order')->get();
+
+    return view('topics.create', compact('categories'));
+}
+
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'category_id' => ['required', 'exists:categories,id'],
+        'title'       => ['required', 'string', 'min:3', 'max:255'],
+        'body'        => ['required', 'string', 'min:2', 'max:10000'],
+    ]);
+
+    $base = Str::slug($validated['title']);
+    if ($base === '') {
+        $base = 'topic';
+    }
+
+    $topic = Topic::create([
+        'category_id' => $validated['category_id'],
+        'user_id'     => $request->user()->id,
+        'title'       => $validated['title'],
+        'slug'        => $base,
+    ]);
+
+    $topic->update(['slug' => $topic->id.'-'.$base]);
+
+    $topic->posts()->create([
+        'user_id' => $request->user()->id,
+        'body'    => $validated['body'],
+    ]);
+
+    return redirect()->route('topics.show', $topic)->with('status', 'Тема создана.');
 }
 }
