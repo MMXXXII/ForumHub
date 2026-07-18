@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="text-xl font-semibold text-black mb-6">Дашборд</h1>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
     <div class="bg-white border border-neutral-200 rounded-lg p-4">
         <div class="flex items-center justify-between">
             <div class="text-2xl font-semibold text-black">{{ $stats['users'] }}</div>
@@ -24,10 +24,6 @@
             <span class="text-xs text-green-600">+{{ $growth['posts'] }} за 7д</span>
         </div>
         <div class="text-xs text-neutral-500 mt-1">сообщений</div>
-    </div>
-    <div class="bg-white border border-neutral-200 rounded-lg p-4">
-        <div class="text-2xl font-semibold text-black">{{ $stats['hidden_posts'] }}</div>
-        <div class="text-xs text-neutral-500 mt-1">скрытых сообщений</div>
     </div>
 </div>
 

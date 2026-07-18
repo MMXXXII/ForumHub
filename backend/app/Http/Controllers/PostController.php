@@ -35,6 +35,24 @@ class PostController extends Controller
         return back()->with('status', 'Сообщение добавлено.');
     }
 
+    public function update(Request $request, Post $post)
+    {
+        if ($request->user()->id !== $post->user_id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'body' => ['required', 'string', 'max:10000'],
+        ]);
+
+        $post->update([
+            'body' => $validated['body'],
+            'edited_at' => now(),
+        ]);
+
+        return redirect()->route('topics.show', $post->topic)->with('status', 'Сообщение изменено.');
+    }
+
     public function destroy(Request $request, Post $post)
     {
         $user = $request->user();

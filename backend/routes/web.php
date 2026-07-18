@@ -20,6 +20,7 @@ Route::post('/t/{topic:slug}/reply', [PostController::class, 'store'])
     ->middleware('auth')
     ->name('posts.store');
 Route::delete('/posts/{post}', [PostController::class, 'destroy'])->middleware('auth')->name('posts.destroy');
+Route::patch('/posts/{post}', [PostController::class, 'update'])->middleware('auth')->name('posts.update');
 Route::delete('/t/{topic:slug}', [TopicController::class, 'destroy'])->middleware('auth')->name('topics.destroy');
 Route::get('/t/create/new', [TopicController::class, 'create'])->middleware('auth')->name('topics.create');
 Route::post('/t', [TopicController::class, 'store'])->middleware('auth')->name('topics.store');
@@ -48,7 +49,6 @@ Route::middleware(['auth', 'role:admin,moderator'])->prefix('admin')->name('admi
     Route::patch('/topics/{topic}/lock', [AdminTopicController::class, 'toggleLock'])->name('topics.lock');
 
     Route::get('/posts', [AdminPostController::class, 'index'])->name('posts.index');
-    Route::patch('/posts/{post}/hide', [AdminPostController::class, 'toggleHide'])->name('posts.hide');
 
     Route::middleware('role:admin')->group(function () {
         Route::delete('/topics/{topic}', [AdminTopicController::class, 'destroy'])->name('topics.destroy');

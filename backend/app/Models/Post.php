@@ -9,8 +9,7 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['topic_id', 'user_id', 'parent_id', 'body', 'moderation_status', 'confidence_score', 'is_hidden'];
-
+    protected $fillable = ['topic_id', 'user_id', 'parent_id', 'body', 'edited_at', 'moderation_status', 'confidence_score'];
     public function topic()
     {
         return $this->belongsTo(Topic::class);
@@ -29,5 +28,10 @@ class Post extends Model
     public function replies()
     {
         return $this->hasMany(Post::class, 'parent_id');
+    }
+
+    protected function casts(): array
+    {
+        return ['edited_at' => 'datetime'];
     }
 }

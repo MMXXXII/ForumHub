@@ -1,42 +1,47 @@
 <div>
-    <div id="post-{{ $post->id }}" class="py-3 {{ $post->is_hidden ? 'opacity-50' : '' }}">
+    <div id="post-{{ $post->id }}" class="py-4 border-b border-neutral-200">
         <div class="flex items-center justify-between mb-1">
-            <div class="flex items-center gap-2">
-                <span class="text-sm font-medium text-black">{{ $post->user->name }}</span>
-                <span class="text-xs text-neutral-400">{{ $post->created_at->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}</span>
-                @if ($post->is_hidden)
-                    <span class="text-[10px] uppercase tracking-wide text-neutral-500">скрыто</span>
-                @endif
-            </div>
-            <div class="flex items-center gap-3">
-                @auth
-                    @if (auth()->user()->isModerator())
-                        <form method="POST" action="{{ route('admin.posts.hide', $post) }}">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="text-xs text-neutral-400 hover:text-black">{{ $post->is_hidden ? 'Показать' : 'Скрыть' }}</button>
-                        </form>
+            <x-username :user="$post->user" class="text-sm font-semibold" />
+            @auth
+                <div class="flex items-center gap-3">
+                    @if (auth()->id() === $post->user_id)
+                        <button type="button" class="text-xs text-neutral-400 hover:text-black" onclick="toggleEdit({{ $post->id }})">Изменить</button>
                     @endif
                     @if (auth()->id() === $post->user_id || auth()->user()->isModerator())
-                        <form method="POST" action="{{ route('posts.destroy', $post) }}" onsubmit="return confirm('Удалить сообщение?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-xs text-red-600 hover:underline">Удалить</button>
-                        </form>
+                        <button type="button" class="text-xs text-red-600 hover:underline"
+                            onclick="openDeleteModal('{{ route('posts.destroy', $post) }}', 'Удалить сообщение?', 'Сообщение будет удалено безвозвратно.')">Удалить</button>
                     @endif
-                @endauth
-            </div>
+                </div>
+            @endauth
         </div>
 
-        <div class="text-sm text-neutral-800 whitespace-pre-line leading-relaxed">{{ $post->body }}</div>
+        <div id="post-body-{{ $post->id }}" class="text-sm text-neutral-800 whitespace-pre-line leading-relaxed">{{ $post->body }}</div>
 
         @auth
-            @unless ($topic->is_locked)
-                <div class="mt-1">
-                    <button type="button" class="reply-btn text-xs text-neutral-400 hover:text-black" data-id="{{ $post->id }}" data-name="{{ $post->user->name }}">Ответить</button>
-                </div>
-            @endunless
+            @if (auth()->id() === $post->user_id)
+                <form id="edit-form-{{ $post->id }}" method="POST" action="{{ route('posts.update', $post) }}" class="hidden mt-2">
+                    @csrf
+                    @method('PATCH')
+                    <textarea name="body" rows="3" class="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-black">{{ $post->body }}</textarea>
+                    <div class="flex items-center gap-2 mt-2">
+                        <button type="submit" class="bg-black text-white text-xs rounded px-3 py-1.5 hover:bg-neutral-800">Сохранить</button>
+                        <button type="button" class="text-xs text-neutral-500 hover:text-black" onclick="toggleEdit({{ $post->id }})">Отмена</button>
+                    </div>
+                </form>
+            @endif
         @endauth
+
+        <div class="flex items-center gap-3 mt-2 text-xs text-neutral-400">
+            <span>{{ $post->created_at->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}</span>
+            @if ($post->edited_at)
+                <span class="text-neutral-400">изменено {{ $post->edited_at->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}</span>
+            @endif
+            @auth
+                @unless ($topic->is_locked)
+                    <button type="button" class="reply-btn hover:text-black" data-id="{{ $post->id }}" data-name="{{ $post->user->name }}">Ответить</button>
+                @endunless
+            @endauth
+        </div>
     </div>
 
     @if ($post->childrenPosts->isNotEmpty())

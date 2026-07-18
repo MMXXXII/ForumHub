@@ -50,6 +50,15 @@ class User extends Authenticatable
     {
         return in_array($this->role, ['moderator', 'admin'], true);
     }
+
+    public function roleColor(): string
+    {
+        return match ($this->role) {
+            'admin' => 'text-red-600',
+            'moderator' => 'text-green-600',
+            default => 'text-black',
+        };
+    }
 }
 
 

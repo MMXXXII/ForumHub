@@ -1,16 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="flex items-center justify-between mb-6 border-b border-neutral-200 pb-4">
-    <div class="flex items-center gap-6 text-sm text-neutral-500">
-        <div><span class="text-black font-semibold">{{ $stats['users'] }}</span> участников</div>
-        <div><span class="text-black font-semibold">{{ $stats['topics'] }}</span> тем</div>
-        <div><span class="text-black font-semibold">{{ $stats['posts'] }}</span> сообщений</div>
-    </div>
-    @auth
-        <a href="{{ route('topics.create') }}" class="bg-black text-white text-sm rounded px-3 py-1.5 hover:bg-neutral-800 transition shrink-0">Создать тему</a>
-    @endauth
-</div>
+<h1 class="text-lg font-semibold text-black mb-4">Все обсуждения</h1>
 
 <div class="border border-neutral-200 rounded-lg overflow-hidden">
     <div class="hidden sm:flex items-center gap-3 px-4 py-2 bg-neutral-50 border-b border-neutral-200 text-xs text-neutral-400">
@@ -36,7 +27,13 @@
                     <span class="text-sm font-medium text-black truncate">{{ $topic->title }}</span>
                 </div>
                 <div class="text-xs text-neutral-400 mt-0.5 truncate">
-                    {{ $topic->user->name }} <span class="text-neutral-300">&middot;</span> {{ $topic->category->name }}
+                    <x-username :user="$topic->user" class="text-xs" />
+                    <span class="text-neutral-300">&middot;</span>
+                    {{ $topic->category->name }}
+                    @if ($topic->posts->isNotEmpty())
+                        <span class="text-neutral-300">&middot;</span>
+                        последний: <x-username :user="$topic->posts->first()->user" class="text-xs" />
+                    @endif
                 </div>
             </div>
 

@@ -14,10 +14,34 @@ class PostController extends Controller
         return view('admin.posts.index', compact('posts'));
     }
 
-    public function toggleHide(Post $post)
+    public function update(Request $request, Post $post)
     {
-        $post->update(['is_hidden' => ! $post->is_hidden]);
+        if ($request->user()->id !== $post->user_id) {
+            abort(403);
+        }
 
-        return back()->with('status', $post->is_hidden ? 'Сообщение скрыто.' : 'Сообщение возвращено.');
+        $validated = $request->validate([
+            'body' => ['required', 'string', 'max:10000'],
+        ]);
+
+        $post->update([
+            'body' => $validated['body'],
+            'edited_at' => now(),
+        ]);
+
+        return redirect()->route('topics.show', $post->topic)->with('status', 'Сообщение изменено.');
     }
-}
+
+    public function destroy(Request $request, Post $post)
+    {
+        $user = $request->user();
+
+        if ($user->id !== $post->user_id && ! $user->isModerator()) {
+            abort(403);
+        }
+
+        $post->delete();
+
+        return back()->with('status', 'Сообщение удалено.');
+    }
+    }

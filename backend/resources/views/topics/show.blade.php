@@ -16,7 +16,7 @@
     </h2>
 
     <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-400">
-        <span>Автор: <span class="text-neutral-600">{{ $topic->user->name }}</span></span>
+        <span>Автор: <x-username :user="$topic->user" class="text-xs" /></span>
         <span>·</span>
         <span>{{ $topic->created_at->timezone('Asia/Irkutsk')->format('d.m.Y, H:i') }}</span>
         <span>·</span>
@@ -29,11 +29,8 @@
 
     @auth
         @if (auth()->id() === $topic->user_id || auth()->user()->isModerator())
-            <form method="POST" action="{{ route('topics.destroy', $topic) }}" onsubmit="return confirm('Удалить тему целиком?')" class="mt-3">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="text-xs text-red-600 hover:underline">Удалить тему</button>
-            </form>
+            <button type="button" class="mt-3 text-xs text-red-600 hover:underline"
+                onclick="openDeleteModal('{{ route('topics.destroy', $topic) }}', 'Удалить тему?', 'Тема и все сообщения будут удалены безвозвратно.')">Удалить тему</button>
         @endif
     @endauth
 </div>

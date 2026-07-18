@@ -17,7 +17,6 @@ class DashboardController extends Controller
             'users' => User::count(),
             'topics' => Topic::count(),
             'posts' => Post::count(),
-            'hidden_posts' => Post::where('is_hidden', true)->count(),
         ];
 
         $growth = [

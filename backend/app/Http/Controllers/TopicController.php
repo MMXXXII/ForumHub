@@ -20,13 +20,7 @@ class TopicController extends Controller
 
     $topic->load(['category', 'user']);
 
-    $isMod = auth()->check() && auth()->user()->isModerator();
-
-    $query = $topic->posts()->with('user');
-    if (! $isMod) {
-        $query->where('is_hidden', false);
-    }
-    $all = $query->orderBy('created_at')->get();
+    $all = $topic->posts()->with('user')->orderBy('created_at')->get();
 
     $grouped    = $all->groupBy('parent_id');
     $visibleIds = $all->pluck('id')->flip();
