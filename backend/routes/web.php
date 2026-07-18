@@ -12,6 +12,8 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WallPostController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/c/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
@@ -24,7 +26,12 @@ Route::patch('/posts/{post}', [PostController::class, 'update'])->middleware('au
 Route::delete('/t/{topic:slug}', [TopicController::class, 'destroy'])->middleware('auth')->name('topics.destroy');
 Route::get('/t/create/new', [TopicController::class, 'create'])->middleware('auth')->name('topics.create');
 Route::post('/t', [TopicController::class, 'store'])->middleware('auth')->name('topics.store');
-
+Route::get('/u/{user}', [ProfileController::class, 'show'])->name('profile.show');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->middleware('auth')->name('profile.edit');
+Route::patch('/profile', [ProfileController::class, 'update'])->middleware('auth')->name('profile.update');
+Route::post('/u/{user}/wall', [WallPostController::class, 'store'])->middleware('auth')->name('wall.store');
+Route::patch('/wall/{wallPost}/pin', [WallPostController::class, 'togglePin'])->middleware('auth')->name('wall.pin');
+Route::delete('/wall/{wallPost}', [WallPostController::class, 'destroy'])->middleware('auth')->name('wall.destroy');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');

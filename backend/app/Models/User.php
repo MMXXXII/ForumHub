@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'avatar', 'status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -58,6 +58,16 @@ class User extends Authenticatable
             'moderator' => 'text-green-600',
             default => 'text-black',
         };
+    }
+
+    public function avatarUrl(): ?string
+    {
+        return $this->avatar ? asset('storage/'.$this->avatar) : null;
+    }
+
+    public function wallPosts()
+    {
+        return $this->hasMany(WallPost::class, 'profile_user_id');
     }
 }
 

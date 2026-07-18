@@ -7,76 +7,124 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-white text-neutral-900 min-h-screen antialiased">
-    <header class="border-b border-neutral-200 sticky top-0 bg-white/95 backdrop-blur z-10">
-        <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a href="{{ route('home') }}" class="text-lg font-bold text-black tracking-tight">ForumHub</a>
+    <header class="border-b border-neutral-200 sticky top-0 bg-white/90 backdrop-blur-md z-30">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-6">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
+                <span class="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center text-sm font-bold">F</span>
+                <span class="text-base font-bold text-black tracking-tight hidden sm:block">ForumHub</span>
+            </a>
 
-            <div class="hidden md:block flex-1 max-w-md mx-8">
-                <input type="text" placeholder="Поиск по форуму" class="w-full bg-neutral-50 border border-neutral-200 rounded px-3 py-1.5 text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-neutral-400 focus:bg-white">
+            <div class="hidden md:block flex-1 max-w-md">
+                <div class="relative">
+                    <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-base"></i>
+                    <input type="text" placeholder="Поиск по форуму" class="w-full bg-neutral-100 border border-transparent rounded-lg pl-9 pr-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:bg-white focus:border-neutral-300 transition">
+                </div>
             </div>
 
-            <nav class="flex items-center gap-3 text-sm">
+            <nav class="flex items-center gap-1 text-sm ml-auto">
                 <div class="relative group hidden sm:block">
-                    <button type="button" class="text-neutral-500 hover:text-black transition inline-flex items-center gap-1">
-                        Соц. сети
-                        <span class="text-[10px] leading-none">&#9662;</span>
+                    <button type="button" class="text-neutral-600 hover:text-black hover:bg-neutral-100 rounded-lg px-3 py-2 transition inline-flex items-center gap-1.5">
+                        <i class="ti ti-world text-base"></i>
+                        <span>Соц. сети</span>
                     </button>
                     <div class="hidden group-hover:block absolute right-0 top-full pt-2 z-50">
-                        <div class="bg-white border border-neutral-200 rounded-lg shadow-sm py-1 min-w-[180px]">
-                            <a href="https://t.me/MMXXXII" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">Telegram</a>
-                            <a href="https://vk.ru/mmxxxii" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">ВКонтакте</a>
-                            <a href="https://github.com/MMXXXII" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">GitHub</a>
+                        <div class="bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 min-w-[190px]">
+                            <a href="https://t.me/MMXXXII" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
+                                <i class="ti ti-brand-telegram text-base text-neutral-400"></i> Telegram
+                            </a>
+                            <a href="https://vk.ru/mmxxxii" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
+                                <i class="ti ti-brand-vk text-base text-neutral-400"></i> ВКонтакте
+                            </a>
+                            <a href="https://github.com/MMXXXII" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
+                                <i class="ti ti-brand-github text-base text-neutral-400"></i> GitHub
+                            </a>
                         </div>
                     </div>
                 </div>
 
                 @auth
                     @if (auth()->user()->isModerator())
-                        <a href="{{ route('admin.dashboard') }}" class="text-neutral-500 hover:text-black transition">Панель</a>
+                        <a href="{{ route('admin.dashboard') }}" class="text-neutral-600 hover:text-black hover:bg-neutral-100 rounded-lg px-3 py-2 transition inline-flex items-center gap-1.5">
+                            <i class="ti ti-layout-dashboard text-base"></i>
+                            <span class="hidden lg:inline">Панель</span>
+                        </a>
                     @endif
-                    <x-username :user="auth()->user()" />
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="text-neutral-500 hover:text-black transition">Выйти</button>
-                    </form>
+
+                    <div class="relative group">
+                        <button type="button" class="flex items-center gap-2 hover:bg-neutral-100 rounded-lg px-2 py-1.5 transition">
+                            <x-avatar :user="auth()->user()" class="w-7 h-7 text-xs" />
+                            <x-username :user="auth()->user()" class="text-sm hidden sm:block" :link="false" />
+                            <i class="ti ti-chevron-down text-xs text-neutral-400"></i>
+                        </button>
+                        <div class="hidden group-hover:block absolute right-0 top-full pt-2 z-50">
+                            <div class="bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 min-w-[190px]">
+                                <a href="{{ route('profile.show', auth()->user()) }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
+                                    <i class="ti ti-user text-base text-neutral-400"></i> Мой профиль
+                                </a>
+                                <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
+                                    <i class="ti ti-settings text-base text-neutral-400"></i> Настройки
+                                </a>
+                                <div class="h-px bg-neutral-200 my-1.5"></div>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
+                                        <i class="ti ti-logout text-base text-neutral-400"></i> Выйти
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 @else
-                    <a href="{{ route('login') }}" class="text-neutral-500 hover:text-black transition">Войти</a>
-                    <a href="{{ route('register') }}" class="bg-black text-white font-medium px-3 py-1.5 rounded hover:bg-neutral-800 transition">Регистрация</a>
+                    <a href="{{ route('login') }}" class="text-neutral-600 hover:text-black hover:bg-neutral-100 rounded-lg px-3 py-2 transition">Войти</a>
+                    <a href="{{ route('register') }}" class="bg-black text-white font-medium px-4 py-2 rounded-lg hover:bg-neutral-800 transition">Регистрация</a>
                 @endauth
             </nav>
         </div>
     </header>
 
     <div class="max-w-6xl mx-auto px-4 py-6 flex gap-6 items-start">
-        <aside class="hidden md:block w-56 shrink-0 sticky top-20 space-y-5">
+        <aside class="hidden md:block w-60 shrink-0 sticky top-20 space-y-6">
             @auth
-                <a href="{{ route('topics.create') }}" class="block bg-black text-white text-sm font-medium text-center rounded-lg px-3 py-2 hover:bg-neutral-800 transition">Создать тему</a>
+                <a href="{{ route('topics.create') }}" class="flex items-center justify-center gap-2 bg-black text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:bg-neutral-800 transition shadow-sm">
+                    <i class="ti ti-plus text-base"></i> Создать тему
+                </a>
             @else
-                <a href="{{ route('login') }}" class="block bg-black text-white text-sm font-medium text-center rounded-lg px-3 py-2 hover:bg-neutral-800 transition">Войдите и обсудите</a>
+                <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 bg-black text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:bg-neutral-800 transition shadow-sm">
+                    <i class="ti ti-message-plus text-base"></i> Войдите и обсудите
+                </a>
             @endauth
 
-            <div>
-                <a href="{{ route('home') }}" class="block px-3 py-2 text-sm rounded-lg border border-neutral-200 mb-3 {{ request()->routeIs('home') ? 'bg-neutral-50 text-black font-medium' : 'text-neutral-700 hover:bg-neutral-50' }}">
+            <nav class="space-y-0.5">
+                <a href="{{ route('home') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs('home') ? 'bg-neutral-100 text-black font-medium' : 'text-neutral-600 hover:bg-neutral-50 hover:text-black' }}">
+                    <i class="ti ti-messages text-base {{ request()->routeIs('home') ? 'text-black' : 'text-neutral-400' }}"></i>
                     Все обсуждения
                 </a>
+            </nav>
 
-                <div class="text-xs uppercase text-neutral-400 font-medium mb-2 px-1">Разделы</div>
-                <nav class="border border-neutral-200 rounded-lg overflow-hidden">
+            <div>
+                <div class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold mb-2 px-3">Разделы</div>
+                <nav class="space-y-0.5">
                     @foreach ($sidebarCategories as $category)
-                        <a href="{{ route('categories.show', $category) }}" class="block px-3 py-2 text-sm border-b border-neutral-200 last:border-b-0 hover:bg-neutral-50 hover:text-black transition {{ request()->is('c/'.$category->slug) ? 'bg-neutral-50 text-black font-medium' : 'text-neutral-700' }}">
-                            {{ $category->name }}
+                        @php $active = request()->is('c/'.$category->slug); @endphp
+                        <a href="{{ route('categories.show', $category) }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition {{ $active ? 'bg-neutral-100 text-black font-medium' : 'text-neutral-600 hover:bg-neutral-50 hover:text-black' }}">
+                            <i class="ti ti-hash text-base {{ $active ? 'text-black' : 'text-neutral-400' }}"></i>
+                            <span class="truncate">{{ $category->name }}</span>
                         </a>
                     @endforeach
                 </nav>
             </div>
+
             <div>
-                <div class="text-xs uppercase text-neutral-400 font-medium mb-2 px-1">Участники</div>
-                <div class="border border-neutral-200 rounded-lg overflow-hidden">
+                <div class="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold mb-2 px-3">Участники</div>
+                <div class="space-y-0.5">
                     @foreach ($sidebarUsers as $sidebarUser)
-                        <div class="flex items-center justify-between px-3 py-2 border-b border-neutral-200 last:border-b-0">
-                            <x-username :user="$sidebarUser" class="text-sm truncate" />
-                            <span class="text-[11px] text-neutral-400 shrink-0 ml-2">{{ $sidebarUser->role }}</span>
-                        </div>
+                        <a href="{{ route('profile.show', $sidebarUser) }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-neutral-50 transition min-w-0">
+                            <x-avatar :user="$sidebarUser" class="w-7 h-7 text-[11px]" />
+                            <div class="min-w-0">
+                                <x-username :user="$sidebarUser" class="text-sm block truncate" :link="false" />
+                                <div class="text-[11px] text-neutral-400 leading-tight">{{ $sidebarUser->role }}</div>
+                            </div>
+                        </a>
                     @endforeach
                 </div>
             </div>

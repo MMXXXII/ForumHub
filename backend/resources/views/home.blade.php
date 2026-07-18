@@ -3,48 +3,45 @@
 @section('content')
 <h1 class="text-lg font-semibold text-black mb-4">Все обсуждения</h1>
 
-<div class="border border-neutral-200 rounded-lg overflow-hidden">
-    <div class="hidden sm:flex items-center gap-3 px-4 py-2 bg-neutral-50 border-b border-neutral-200 text-xs text-neutral-400">
-        <span class="flex-1">Тема</span>
-        <span class="w-16 text-center">Ответов</span>
-        <span class="w-28 text-right">Активность</span>
-    </div>
-
+<div class="border border-neutral-200 rounded-xl overflow-hidden bg-white">
     @forelse ($topics as $topic)
-        <a href="{{ route('topics.show', $topic) }}" class="flex items-center gap-3 px-4 py-3 border-b border-neutral-200 last:border-b-0 hover:bg-neutral-50 transition">
-            <div class="w-8 h-8 rounded-full bg-neutral-100 text-neutral-500 flex items-center justify-center text-xs font-medium shrink-0">
-                {{ mb_strtoupper(mb_substr($topic->user->name, 0, 1)) }}
-            </div>
+        <a href="{{ route('topics.show', $topic) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-neutral-200 last:border-b-0 hover:bg-neutral-50 transition group">
+            <x-avatar :user="$topic->user" class="w-10 h-10 text-sm" />
 
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1.5">
                     @if ($topic->is_pinned)
-                        <span class="text-neutral-400 shrink-0" title="Закреплено">&#9733;</span>
+                        <i class="ti ti-pin-filled text-sm text-neutral-400 shrink-0"></i>
                     @endif
                     @if ($topic->is_locked)
-                        <span class="text-neutral-400 shrink-0" title="Закрыто">&#128274;</span>
+                        <i class="ti ti-lock text-sm text-neutral-400 shrink-0"></i>
                     @endif
-                    <span class="text-sm font-medium text-black truncate">{{ $topic->title }}</span>
+                    <span class="text-[15px] font-semibold text-black truncate group-hover:underline">{{ $topic->title }}</span>
                 </div>
-                <div class="text-xs text-neutral-400 mt-0.5 truncate">
-                    <x-username :user="$topic->user" class="text-xs" />
-                    <span class="text-neutral-300">&middot;</span>
-                    {{ $topic->category->name }}
+                <div class="flex items-center gap-2 mt-1 min-w-0">
+                    <span class="text-[10px] font-semibold uppercase tracking-wide bg-neutral-100 text-neutral-500 px-1.5 py-0.5 rounded shrink-0">{{ $topic->category->name }}</span>
+                    <x-username :user="$topic->user" class="text-xs" :link="false" />
                     @if ($topic->posts->isNotEmpty())
-                        <span class="text-neutral-300">&middot;</span>
-                        последний: <x-username :user="$topic->posts->first()->user" class="text-xs" />
+                        <span class="text-xs text-neutral-300">·</span>
+                        <span class="text-xs text-neutral-400 truncate">последний: {{ $topic->posts->first()->user->name }}</span>
                     @endif
                 </div>
             </div>
 
-            <div class="w-16 text-center text-sm text-neutral-600 shrink-0">{{ $topic->posts_count }}</div>
+            <div class="flex items-center gap-1.5 text-neutral-400 shrink-0">
+                <i class="ti ti-message-circle text-base"></i>
+                <span class="text-sm">{{ $topic->posts_count }}</span>
+            </div>
 
-            <div class="w-28 text-right text-xs text-neutral-400 shrink-0">
-                {{ \Illuminate\Support\Carbon::parse($topic->posts_max_created_at ?? $topic->created_at)->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}
+            <div class="w-24 text-right text-xs text-neutral-400 shrink-0 hidden sm:block">
+                {{ \Illuminate\Support\Carbon::parse($topic->posts_max_created_at ?? $topic->created_at)->timezone('Asia/Irkutsk')->diffForHumans() }}
             </div>
         </a>
     @empty
-        <div class="px-4 py-8 text-center text-neutral-400 text-sm">Пока нет тем</div>
+        <div class="px-4 py-12 text-center">
+            <i class="ti ti-message-off text-3xl text-neutral-300"></i>
+            <div class="text-sm text-neutral-400 mt-2">Пока нет тем</div>
+        </div>
     @endforelse
 </div>
 

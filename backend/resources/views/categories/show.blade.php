@@ -25,7 +25,7 @@
                     @endif
                     <div class="text-black text-sm font-medium truncate">{{ $topic->title }}</div>
                 </div>
-                <div class="text-xs mt-0.5"><x-username :user="$topic->user" class="text-xs" /></div>
+                <div class="text-xs mt-0.5"><x-username :user="$topic->user" class="text-xs" :link="false" /></div>
             </a>
 
             <div class="flex items-center gap-3 ml-4">
