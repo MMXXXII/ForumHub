@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'avatar', 'status'])]
+#[Fillable(['name', 'email', 'password', 'avatar', 'status', 'birthday', 'telegram', 'vk', 'steam', 'website', 'timezone'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -29,6 +29,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'banned_until' => 'datetime',
             'two_factor_expires_at' => 'datetime',
+            'birthday' => 'date',
         ];
     } 
 
@@ -79,6 +80,16 @@ class User extends Authenticatable
     public function isPermanentlyBanned(): bool
     {
         return $this->isBanned() && $this->banned_until->year > 2100;
+    }
+
+    public function socialLinks(): array
+    {
+        return array_filter([
+            'Telegram' => $this->telegram ? 'https://t.me/'.ltrim($this->telegram, '@') : null,
+            'ВКонтакте' => $this->vk ? 'https://vk.com/'.$this->vk : null,
+            'Steam' => $this->steam ? 'https://steamcommunity.com/id/'.$this->steam : null,
+            'Сайт' => $this->website,
+        ]);
     }
 }
 

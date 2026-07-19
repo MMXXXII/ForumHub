@@ -61,7 +61,7 @@
                                 <a href="{{ route('profile.show', auth()->user()) }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
                                     <i class="ti ti-user text-base text-neutral-400"></i> Мой профиль
                                 </a>
-                                <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
+                                <a href="{{ route('settings.profile') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
                                     <i class="ti ti-settings text-base text-neutral-400"></i> Настройки
                                 </a>
                                 <div class="h-px bg-neutral-200 my-1.5"></div>

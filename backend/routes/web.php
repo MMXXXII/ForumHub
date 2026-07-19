@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WallPostController;
+use App\Http\Controllers\SettingsController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/c/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
@@ -46,6 +47,17 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+});
+
+Route::middleware('auth')->prefix('settings')->name('settings.')->group(function () {
+    Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    Route::get('/', [SettingsController::class, 'profile'])->name('profile');
+    Route::get('/security', [SettingsController::class, 'security'])->name('security');
+    Route::get('/preferences', [SettingsController::class, 'preferences'])->name('preferences');
+
+    Route::patch('/profile', [SettingsController::class, 'updateProfile'])->name('profile.update');
+    Route::patch('/password', [SettingsController::class, 'updatePassword'])->name('password.update');
+    Route::patch('/preferences', [SettingsController::class, 'updatePreferences'])->name('preferences.update');
 });
 
 Route::middleware(['auth', 'role:admin,moderator'])->prefix('admin')->name('admin.')->group(function () {

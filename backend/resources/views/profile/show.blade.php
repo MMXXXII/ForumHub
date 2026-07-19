@@ -10,6 +10,16 @@
             @if ($user->status)
                 <div class="text-sm text-neutral-500 mt-0.5">{{ $user->status }}</div>
             @endif
+            @if ($user->birthday || $user->socialLinks())
+                <div class="flex items-center gap-3 mt-2 flex-wrap text-xs">
+                    @if ($user->birthday)
+                        <span class="text-neutral-400"><i class="ti ti-cake text-sm align-middle"></i> {{ $user->birthday->format('d.m.Y') }}</span>
+                    @endif
+                    @foreach ($user->socialLinks() as $label => $url)
+                        <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="text-neutral-500 hover:text-black hover:underline">{{ $label }}</a>
+                    @endforeach
+                </div>
+            @endif
             <div class="text-xs text-neutral-400 mt-2">
                 На форуме с {{ $user->created_at->timezone('Asia/Irkutsk')->format('d.m.Y') }}
                 <span class="text-neutral-300 mx-1">&middot;</span>
@@ -21,7 +31,7 @@
 
         @auth
             @if (auth()->id() === $user->id)
-                <a href="{{ route('profile.edit') }}" class="text-xs text-neutral-500 hover:text-black border border-neutral-200 rounded px-3 py-1.5 shrink-0">Редактировать</a>
+                <a href="{{ route('settings.profile') }}" class="text-xs text-neutral-500 hover:text-black border border-neutral-200 rounded px-3 py-1.5 shrink-0">Редактировать</a>
             @endif
         @endauth
     </div>
