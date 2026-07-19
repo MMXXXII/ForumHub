@@ -27,6 +27,59 @@
     </div>
 </div>
 
+<div class="flex items-center gap-2 mb-3">
+    <h2 class="text-sm font-semibold text-black">Автоматическая модерация</h2>
+    <a href="{{ route('admin.posts.index', ['tab' => 'moderation']) }}" class="text-xs text-neutral-500 hover:text-black">перейти к очереди &rarr;</a>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+    <div class="bg-white border border-neutral-200 rounded-lg p-4">
+        <div class="text-2xl font-semibold text-black">{{ $moderationStats['approved'] }}</div>
+        <div class="text-xs text-neutral-500 mt-1">одобрено</div>
+    </div>
+    <div class="bg-white border border-neutral-200 rounded-lg p-4">
+        <div class="text-2xl font-semibold text-red-600">{{ $moderationStats['rejected'] }}</div>
+        <div class="text-xs text-neutral-500 mt-1">заблокировано</div>
+    </div>
+    <div class="bg-white border border-neutral-200 rounded-lg p-4">
+        <div class="text-2xl font-semibold text-amber-600">{{ $moderationStats['pending'] }}</div>
+        <div class="text-xs text-neutral-500 mt-1">ожидает проверки</div>
+    </div>
+    <div class="bg-white border border-neutral-200 rounded-lg p-4">
+        <div class="text-2xl font-semibold text-black">{{ $moderationStats['blocked_rate'] }}%</div>
+        <div class="text-xs text-neutral-500 mt-1">доля нарушений</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white border border-neutral-200 rounded-lg p-4">
+        <div class="text-sm font-medium text-black mb-3">Заблокировано за 14 дней</div>
+        <div class="h-56">
+            <canvas id="rejectedChart" data-labels="{{ $chartLabels->toJson() }}" data-values="{{ $rejectedChart->toJson() }}"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white border border-neutral-200 rounded-lg p-4">
+        <div class="text-sm font-medium text-black mb-3">Самые токсичные сообщения</div>
+        @forelse ($recentRejected as $rejected)
+            <div class="flex items-start justify-between gap-3 py-2 border-b border-neutral-100 last:border-b-0">
+                <div class="min-w-0">
+                    <div class="text-sm text-neutral-700 truncate">{{ $rejected->body }}</div>
+                    <div class="text-xs text-neutral-400 mt-0.5 truncate">{{ $rejected->user->name }} &middot; {{ $rejected->topic->title }}</div>
+                </div>
+                <span class="text-xs font-semibold text-red-600 shrink-0">{{ number_format((float) $rejected->confidence_score * 100, 1) }}%</span>
+            </div>
+        @empty
+            <div class="text-sm text-neutral-400 py-6 text-center">Нарушений не зафиксировано</div>
+        @endforelse
+        @if ($moderationStats['rejected'] > 0)
+            <div class="text-xs text-neutral-400 mt-3 pt-3 border-t border-neutral-100">
+                Средняя оценка токсичности заблокированных: <span class="text-black font-medium">{{ $moderationStats['avg_score'] }}%</span>
+            </div>
+        @endif
+    </div>
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <div class="bg-white border border-neutral-200 rounded-lg p-4">
         <div class="text-sm font-medium text-black mb-3">Регистрации за 14 дней</div>
@@ -106,66 +159,4 @@
         </tbody>
     </table>
 </div>
-
-<script>
-    const labels = @json($chartLabels);
-    const baseOptions = { responsive: true, maintainAspectRatio: false };
-
-    new Chart(document.getElementById('registrationsChart'), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Регистрации',
-                data: @json($registrationsChart),
-                borderColor: '#000000',
-                backgroundColor: 'rgba(0,0,0,0.05)',
-                tension: 0.3,
-                fill: true,
-            }]
-        },
-        options: { ...baseOptions, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-    });
-
-    new Chart(document.getElementById('postsChart'), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Сообщения',
-                data: @json($postsChart),
-                borderColor: '#000000',
-                backgroundColor: 'rgba(0,0,0,0.05)',
-                tension: 0.3,
-                fill: true,
-            }]
-        },
-        options: { ...baseOptions, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-    });
-
-    new Chart(document.getElementById('categoriesChart'), {
-        type: 'bar',
-        data: {
-            labels: @json($categoryStats->pluck('name')),
-            datasets: [{
-                label: 'Тем',
-                data: @json($categoryStats->pluck('topics_count')),
-                backgroundColor: '#000000',
-            }]
-        },
-        options: { ...baseOptions, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-    });
-
-    new Chart(document.getElementById('rolesChart'), {
-        type: 'doughnut',
-        data: {
-            labels: @json($roleStats->keys()),
-            datasets: [{
-                data: @json($roleStats->values()),
-                backgroundColor: ['#000000', '#737373', '#a3a3a3', '#d4d4d4'],
-            }]
-        },
-        options: baseOptions
-    });
-</script>
 @endsection

@@ -1,39 +1,42 @@
 <?php
-use App\Http\Controllers\PostController;
+
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\TopicController as AdminTopicController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\TopicController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\WallPostController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\Admin\ModerationController;
+use App\Http\Controllers\TopicController;
+use App\Http\Controllers\WallPostController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/c/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 Route::get('/t/{topic:slug}', [TopicController::class, 'show'])->name('topics.show');
-Route::post('/t/{topic:slug}/reply', [PostController::class, 'store'])
-    ->middleware('auth')
-    ->name('posts.store');
-Route::delete('/posts/{post}', [PostController::class, 'destroy'])->middleware('auth')->name('posts.destroy');
-Route::patch('/posts/{post}', [PostController::class, 'update'])->middleware('auth')->name('posts.update');
-Route::delete('/t/{topic:slug}', [TopicController::class, 'destroy'])->middleware('auth')->name('topics.destroy');
-Route::get('/t/create/new', [TopicController::class, 'create'])->middleware('auth')->name('topics.create');
-Route::post('/t', [TopicController::class, 'store'])->middleware('auth')->name('topics.store');
 Route::get('/u/{user}', [ProfileController::class, 'show'])->name('profile.show');
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->middleware('auth')->name('profile.edit');
-Route::patch('/profile', [ProfileController::class, 'update'])->middleware('auth')->name('profile.update');
-Route::post('/u/{user}/wall', [WallPostController::class, 'store'])->middleware('auth')->name('wall.store');
-Route::patch('/wall/{wallPost}/pin', [WallPostController::class, 'togglePin'])->middleware('auth')->name('wall.pin');
-Route::delete('/wall/{wallPost}', [WallPostController::class, 'destroy'])->middleware('auth')->name('wall.destroy');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+
+    Route::get('/t/create/new', [TopicController::class, 'create'])->name('topics.create');
+    Route::post('/t', [TopicController::class, 'store'])->name('topics.store');
+    Route::delete('/t/{topic:slug}', [TopicController::class, 'destroy'])->name('topics.destroy');
+
+    Route::post('/t/{topic:slug}/reply', [PostController::class, 'store'])->name('posts.store');
+    Route::patch('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+    Route::post('/u/{user}/wall', [WallPostController::class, 'store'])->name('wall.store');
+    Route::patch('/wall/{wallPost}/pin', [WallPostController::class, 'togglePin'])->name('wall.pin');
+    Route::delete('/wall/{wallPost}', [WallPostController::class, 'destroy'])->name('wall.destroy');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
@@ -46,12 +49,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/verify', [TwoFactorController::class, 'store'])->name('two-factor.store');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
-});
-
 Route::middleware('auth')->prefix('settings')->name('settings.')->group(function () {
-    Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/', [SettingsController::class, 'profile'])->name('profile');
     Route::get('/security', [SettingsController::class, 'security'])->name('security');
     Route::get('/preferences', [SettingsController::class, 'preferences'])->name('preferences');
@@ -69,6 +67,8 @@ Route::middleware(['auth', 'role:admin,moderator'])->prefix('admin')->name('admi
     Route::patch('/topics/{topic}/lock', [AdminTopicController::class, 'toggleLock'])->name('topics.lock');
 
     Route::get('/posts', [AdminPostController::class, 'index'])->name('posts.index');
+    Route::patch('/posts/{post}/approve', [AdminPostController::class, 'approve'])->name('posts.approve');
+    Route::patch('/posts/{post}/reject', [AdminPostController::class, 'reject'])->name('posts.reject');
 
     Route::middleware('role:admin')->group(function () {
         Route::delete('/topics/{topic}', [AdminTopicController::class, 'destroy'])->name('topics.destroy');
@@ -83,9 +83,5 @@ Route::middleware(['auth', 'role:admin,moderator'])->prefix('admin')->name('admi
         Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
         Route::patch('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
-
-        Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
-        Route::patch('/moderation/{post}/approve', [ModerationController::class, 'approve'])->name('moderation.approve');
-        Route::patch('/moderation/{post}/reject', [ModerationController::class, 'reject'])->name('moderation.reject');
     });
 });

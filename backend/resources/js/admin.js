@@ -67,4 +67,21 @@ document.addEventListener('DOMContentLoaded', () => {
             options: baseOptions,
         });
     }
+
+    const rejectedEl = document.getElementById('rejectedChart');
+    if (rejectedEl) {
+        const { labels, values } = readData(rejectedEl);
+        new Chart(rejectedEl, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Заблокировано',
+                    data: values,
+                    backgroundColor: '#dc2626',
+                }],
+            },
+            options: { ...baseOptions, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
+        });
+    }
 });
