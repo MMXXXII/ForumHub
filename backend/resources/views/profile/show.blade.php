@@ -1,39 +1,66 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="border border-neutral-200 rounded-xl p-5 mb-4">
-    <div class="flex items-start gap-4">
-        <x-avatar :user="$user" class="w-20 h-20 text-2xl" />
+<div class="border border-neutral-200 rounded-2xl overflow-hidden bg-white mb-4">
+    <div class="p-6">
+        <div class="flex items-start gap-5">
+            <x-avatar :user="$user" class="w-28 h-28 text-4xl shadow-sm" />
 
-        <div class="min-w-0 flex-1">
-            <h1 class="text-2xl font-semibold {{ $user->roleColor() }}">{{ $user->name }}</h1>
-            @if ($user->status)
-                <div class="text-sm text-neutral-500 mt-0.5">{{ $user->status }}</div>
-            @endif
-            @if ($user->birthday || $user->socialLinks())
-                <div class="flex items-center gap-3 mt-2 flex-wrap text-xs">
-                    @if ($user->birthday)
-                        <span class="text-neutral-400"><i class="ti ti-cake text-sm align-middle"></i> {{ $user->birthday->format('d.m.Y') }}</span>
+            <div class="min-w-0 flex-1 pt-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-3xl font-bold {{ $user->roleColor() }} tracking-tight leading-none">{{ $user->name }}</h1>
+                    @if ($user->isBanned())
+                        <span class="text-[10px] font-semibold uppercase tracking-wide bg-red-50 text-red-600 px-2 py-0.5 rounded">заблокирован</span>
                     @endif
-                    @foreach ($user->socialLinks() as $label => $url)
-                        <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="text-neutral-500 hover:text-black hover:underline">{{ $label }}</a>
-                    @endforeach
                 </div>
-            @endif
-            <div class="text-xs text-neutral-400 mt-2">
-                На форуме с {{ $user->created_at->timezone('Asia/Irkutsk')->format('d.m.Y') }}
-                <span class="text-neutral-300 mx-1">&middot;</span>
-                {{ $user->topics_count }} тем
-                <span class="text-neutral-300 mx-1">&middot;</span>
-                {{ $user->posts_count }} сообщений
-            </div>
-        </div>
 
-        @auth
-            @if (auth()->id() === $user->id)
-                <a href="{{ route('settings.profile') }}" class="text-xs text-neutral-500 hover:text-black border border-neutral-200 rounded px-3 py-1.5 shrink-0">Редактировать</a>
-            @endif
-        @endauth
+                @if ($user->status)
+                    <div class="text-[15px] text-neutral-500 mt-2">{{ $user->status }}</div>
+                @endif
+
+                @if ($user->birthday || count($user->socialLinks()))
+                    <div class="flex items-center gap-2 mt-4 flex-wrap">
+                        @if ($user->birthday)
+                            <span class="inline-flex items-center gap-1.5 text-xs text-neutral-500 bg-neutral-100 rounded-lg px-2.5 py-1.5">
+                                <i class="ti ti-cake text-sm"></i>{{ $user->birthday->format('d.m.Y') }}
+                            </span>
+                        @endif
+
+                        @php
+                            $icons = ['Telegram' => 'ti-brand-telegram', 'ВКонтакте' => 'ti-brand-vk', 'Steam' => 'ti-brand-steam', 'Сайт' => 'ti-link'];
+                        @endphp
+                        @foreach ($user->socialLinks() as $label => $url)
+                            <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs text-neutral-600 bg-neutral-100 hover:bg-neutral-200 hover:text-black rounded-lg px-2.5 py-1.5 transition">
+                                <i class="ti {{ $icons[$label] ?? 'ti-link' }} text-sm"></i>{{ $label }}
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            @auth
+                @if (auth()->id() === $user->id)
+                    <a href="{{ route('settings.profile') }}" class="flex items-center gap-1.5 text-sm text-neutral-600 hover:text-black border border-neutral-200 rounded-lg px-3 py-1.5 hover:bg-neutral-50 transition shrink-0">
+                        <i class="ti ti-settings text-base"></i> Редактировать
+                    </a>
+                @endif
+            @endauth
+        </div>
+    </div>
+
+    <div class="grid grid-cols-3 border-t border-neutral-200 divide-x divide-neutral-200 bg-neutral-50/50">
+        <div class="px-6 py-3.5">
+            <div class="text-xl font-semibold text-black">{{ $user->topics_count }}</div>
+            <div class="text-xs text-neutral-500 mt-0.5">тем</div>
+        </div>
+        <div class="px-6 py-3.5">
+            <div class="text-xl font-semibold text-black">{{ $user->posts_count }}</div>
+            <div class="text-xs text-neutral-500 mt-0.5">сообщений</div>
+        </div>
+        <div class="px-6 py-3.5">
+            <div class="text-xl font-semibold text-black">{{ $user->created_at->format('d.m.Y') }}</div>
+            <div class="text-xs text-neutral-500 mt-0.5">на форуме с</div>
+        </div>
     </div>
 </div>
 

@@ -50,9 +50,22 @@ services:
     networks:
       - forumhub
 
+  ml:
+    build:
+      context: ./ml-service
+    container_name: forumhub_ml
+    environment:
+      TOXICITY_THRESHOLD: 0.5
+    ports:
+      - "8001:8000"
+    networks:
+      - forumhub
+
 networks:
   forumhub:
     driver: bridge
 
 volumes:
   forumhub_mysql_data:
+
+  

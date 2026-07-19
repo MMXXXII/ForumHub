@@ -1,6 +1,4 @@
 <a href="{{ route('topics.show', $topic) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-neutral-200 last:border-b-0 hover:bg-neutral-50 transition group">
-    <x-avatar :user="$topic->user" class="w-10 h-10 text-sm" />
-
     <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5">
             @if ($topic->is_locked)

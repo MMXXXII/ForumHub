@@ -1,7 +1,14 @@
 <div>
     <div id="post-{{ $post->id }}" class="py-4 border-b border-neutral-200">
         <div class="flex items-center justify-between mb-1">
-            <x-username :user="$post->user" class="text-sm font-semibold" />
+            <div class="flex items-center gap-2 min-w-0">
+                <x-username :user="$post->user" class="text-sm font-semibold" />
+                @if ($post->moderation_status !== 'approved')
+                    <span class="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded shrink-0 {{ $post->moderation_status === 'rejected' ? 'bg-red-50 text-red-600' : 'bg-neutral-100 text-neutral-500' }}">
+                        {{ $post->moderation_status === 'rejected' ? 'нарушение' : 'на проверке' }}
+                    </span>
+                @endif
+            </div>
             @auth
                 <div class="flex items-center gap-3">
                     @if (auth()->id() === $post->user_id)

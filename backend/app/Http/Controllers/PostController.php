@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Topic;
 use Illuminate\Http\Request;
+use App\Services\ModerationService;
+
 
 class PostController extends Controller
 {
-    public function store(Request $request, Topic $topic)
+    public function store(Request $request, Topic $topic, ModerationService $moderation)
     {
         if ($topic->is_locked) {
             return back()->withErrors(['body' => 'Тема закрыта для ответов.']);
@@ -26,11 +28,23 @@ class PostController extends Controller
             }
         }
 
+        $verdict = $moderation->check($validated['body']);
+
         $topic->posts()->create([
-            'user_id'   => $request->user()->id,
+            'user_id' => $request->user()->id,
             'parent_id' => $validated['parent_id'] ?? null,
-            'body'      => $validated['body'],
+            'body' => $validated['body'],
+            'moderation_status' => $verdict['status'],
+            'confidence_score' => $verdict['score'],
         ]);
+
+        if ($verdict['status'] === 'rejected') {
+            return back()->with('warning', 'Сообщение отправлено на проверку модератору: система обнаружила возможное нарушение правил.');
+        }
+
+        if ($verdict['status'] === 'pending') {
+            return back()->with('warning', 'Сообщение отправлено на проверку модератору.');
+        }
 
         return back()->with('status', 'Сообщение добавлено.');
     }

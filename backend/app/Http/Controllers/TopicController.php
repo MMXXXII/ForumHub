@@ -20,7 +20,21 @@ class TopicController extends Controller
 
     $topic->load(['category', 'user']);
 
-    $all = $topic->posts()->with('user')->orderBy('created_at')->get();
+    $query = $topic->posts()->with('user');
+
+    if (auth()->check() && auth()->user()->isModerator()) {
+        $query->whereIn('moderation_status', ['approved', 'rejected', 'pending']);
+    } else {
+        $userId = auth()->id();
+        $query->where(function ($q) use ($userId) {
+            $q->where('moderation_status', 'approved');
+            if ($userId) {
+                $q->orWhere('user_id', $userId);
+            }
+        });
+    }
+
+    $all = $query->orderBy('created_at')->get();
 
     $grouped    = $all->groupBy('parent_id');
     $visibleIds = $all->pluck('id')->flip();

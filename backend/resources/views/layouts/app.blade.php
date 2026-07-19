@@ -131,6 +131,16 @@
         </aside>
 
         <main class="flex-1 min-w-0">
+            @if (session('warning'))
+                <div class="mb-4 flex items-start gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    <i class="ti ti-alert-triangle text-base shrink-0 mt-0.5"></i>{{ session('warning') }}
+                </div>
+            @endif
+            @if (session('status'))
+                <div class="mb-4 flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                    <i class="ti ti-check text-base"></i>{{ session('status') }}
+                </div>
+            @endif
             @yield('content')
         </main>
     </div>

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WallPostController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Admin\ModerationController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/c/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
@@ -82,5 +83,9 @@ Route::middleware(['auth', 'role:admin,moderator'])->prefix('admin')->name('admi
         Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
         Route::patch('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+
+        Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
+        Route::patch('/moderation/{post}/approve', [ModerationController::class, 'approve'])->name('moderation.approve');
+        Route::patch('/moderation/{post}/reject', [ModerationController::class, 'reject'])->name('moderation.reject');
     });
 });

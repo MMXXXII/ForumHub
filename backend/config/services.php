@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'moderation' => [
+        'url' => env('MODERATION_SERVICE_URL', 'http://ml:8000'),
+        'timeout' => env('MODERATION_TIMEOUT', 5),
+        'enabled' => env('MODERATION_ENABLED', true),
+    ],
+
 ];
