@@ -27,6 +27,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'banned_until' => 'datetime',
             'two_factor_expires_at' => 'datetime',
         ];
     } 
@@ -68,6 +69,16 @@ class User extends Authenticatable
     public function wallPosts()
     {
         return $this->hasMany(WallPost::class, 'profile_user_id');
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->banned_until !== null && $this->banned_until->isFuture();
+    }
+
+    public function isPermanentlyBanned(): bool
+    {
+        return $this->isBanned() && $this->banned_until->year > 2100;
     }
 }
 

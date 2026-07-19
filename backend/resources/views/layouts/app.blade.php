@@ -106,9 +106,9 @@
                 <nav class="space-y-0.5">
                     @foreach ($sidebarCategories as $category)
                         @php $active = request()->is('c/'.$category->slug); @endphp
-                        <a href="{{ route('categories.show', $category) }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition {{ $active ? 'bg-neutral-100 text-black font-medium' : 'text-neutral-600 hover:bg-neutral-50 hover:text-black' }}">
-                            <i class="ti ti-hash text-base {{ $active ? 'text-black' : 'text-neutral-400' }}"></i>
+                        <a href="{{ route('categories.show', $category) }}" class="flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition {{ $active ? 'bg-neutral-100 text-black font-medium' : 'text-neutral-600 hover:bg-neutral-50 hover:text-black' }}">
                             <span class="truncate">{{ $category->name }}</span>
+                            <span class="text-xs text-neutral-400 shrink-0">{{ $category->topics_count }}</span>
                         </a>
                     @endforeach
                 </nav>

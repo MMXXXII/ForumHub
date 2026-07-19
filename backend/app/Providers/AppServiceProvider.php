@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('layouts.app', function ($view) {
-            $view->with('sidebarCategories', Category::orderBy('order')->get());
+            $view->with('sidebarCategories', Category::withCount('topics')->orderBy('order')->get());
             $view->with('sidebarUsers', User::orderBy('name')->take(10)->get());
         });
 

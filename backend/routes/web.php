@@ -61,7 +61,10 @@ Route::middleware(['auth', 'role:admin,moderator'])->prefix('admin')->name('admi
         Route::delete('/topics/{topic}', [AdminTopicController::class, 'destroy'])->name('topics.destroy');
 
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-        Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+        Route::patch('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+        Route::patch('/users/{user}/ban', [AdminUserController::class, 'ban'])->name('users.ban');
+        Route::patch('/users/{user}/unban', [AdminUserController::class, 'unban'])->name('users.unban');
+        Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
         Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');

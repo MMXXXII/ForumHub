@@ -11,13 +11,22 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $topics = Topic::withCount('posts')
-            ->with(['user', 'category', 'posts' => fn ($q) => $q->latest()->limit(1)->with('user')])
+        $relations = ['user', 'category', 'posts' => fn ($q) => $q->latest()->limit(1)->with('user')];
+
+        $pinnedTopics = Topic::withCount('posts')
+            ->with($relations)
             ->withMax('posts', 'created_at')
-            ->orderByDesc('is_pinned')
-            ->orderByDesc('created_at')
+            ->where('is_pinned', true)
+            ->latest()
+            ->get();
+
+        $topics = Topic::withCount('posts')
+            ->with($relations)
+            ->withMax('posts', 'created_at')
+            ->where('is_pinned', false)
+            ->latest()
             ->paginate(15);
 
-        return view('home', compact('topics'));
+        return view('home', compact('pinnedTopics', 'topics'));
     }
 }
