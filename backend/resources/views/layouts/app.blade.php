@@ -14,12 +14,12 @@
                 <span class="text-base font-bold text-black tracking-tight hidden sm:block">ForumHub</span>
             </a>
 
-            <div class="hidden md:block flex-1 max-w-md">
+            <form method="GET" action="{{ route('search') }}" class="hidden md:block flex-1 max-w-md">
                 <div class="relative">
                     <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-base"></i>
-                    <input type="text" placeholder="Поиск по форуму" class="w-full bg-neutral-100 border border-transparent rounded-lg pl-9 pr-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:bg-white focus:border-neutral-300 transition">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Поиск по форуму" class="w-full bg-neutral-100 border border-transparent rounded-lg pl-9 pr-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:bg-white focus:border-neutral-300 transition">
                 </div>
-            </div>
+            </form>
 
             <nav class="flex items-center gap-1 text-sm ml-auto">
                 <div class="relative group hidden sm:block">
@@ -85,8 +85,13 @@
     <div class="max-w-6xl mx-auto px-4 py-6 flex gap-6 items-start">
         <aside class="hidden md:block w-60 shrink-0 sticky top-20 space-y-6">
             @auth
-                <a href="{{ route('topics.create') }}" class="flex items-center justify-center gap-2 bg-black text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:bg-neutral-800 transition shadow-sm">
-                    <i class="ti ti-plus text-base"></i> Создать тему
+                @php
+                    $currentCategory = request()->route('category');
+                    $createParams = $currentCategory instanceof \App\Models\Category ? ['category' => $currentCategory->id] : [];
+                @endphp
+                <a href="{{ route('topics.create', $createParams) }}" class="flex items-center justify-center gap-2 bg-black text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:bg-neutral-800 transition shadow-sm">
+                    <i class="ti ti-plus text-base"></i>
+                    {{ $currentCategory instanceof \App\Models\Category ? 'Создать в разделе' : 'Создать тему' }}
                 </a>
             @else
                 <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 bg-black text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:bg-neutral-800 transition shadow-sm">

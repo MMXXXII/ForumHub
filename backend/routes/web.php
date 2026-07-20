@@ -16,11 +16,13 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\WallPostController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SearchController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/c/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 Route::get('/t/{topic:slug}', [TopicController::class, 'show'])->name('topics.show');
 Route::get('/u/{user}', [ProfileController::class, 'show'])->name('profile.show');
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
