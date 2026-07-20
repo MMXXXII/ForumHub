@@ -6,7 +6,7 @@
         'url' => route('profile.show', $user),
         'avatar' => $user->avatarUrl(),
         'initial' => mb_strtoupper(mb_substr($user->name, 0, 1)),
-        'role' => $user->role,
+        'role' => $user->roleLabel(),
         'color' => $user->roleColor(),
         'status' => $user->status,
         'joined' => $user->created_at->format('d.m.Y'),

@@ -8,7 +8,7 @@
 
             <div class="min-w-0 flex-1 pt-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <h1 class="text-3xl font-bold {{ $user->roleColor() }} tracking-tight leading-none">{{ $user->name }}</h1>
+                    <h1 class="text-3xl font-bold {{ $user->roleLabel() }} tracking-tight leading-none">{{ $user->name }}</h1>
                     @if ($user->isBanned())
                         <span class="text-[10px] font-semibold uppercase tracking-wide bg-red-50 text-red-600 px-2 py-0.5 rounded">заблокирован</span>
                     @endif

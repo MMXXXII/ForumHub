@@ -14,9 +14,9 @@
     <input type="text" name="q" value="{{ request('q') }}" placeholder="Поиск по имени, почте или ID" class="border border-neutral-200 rounded px-3 py-1.5 text-sm flex-1 focus:outline-none focus:border-black">
     <select name="role" class="border border-neutral-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-black">
         <option value="">Все роли</option>
-        <option value="user" @selected(request('role') === 'user')>user</option>
-        <option value="moderator" @selected(request('role') === 'moderator')>moderator</option>
-        <option value="admin" @selected(request('role') === 'admin')>admin</option>
+        <option value="user" @selected(request('role') === 'user')>Пользователи</option>
+        <option value="moderator" @selected(request('role') === 'moderator')>Модераторы</option>
+        <option value="admin" @selected(request('role') === 'admin')>Администраторы</option>
     </select>
     <select name="sort" class="border border-neutral-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-black">
         <option value="">Новые</option>
@@ -52,8 +52,8 @@
                     <input type="text" name="name" value="{{ $user->name }}" class="border border-neutral-200 rounded px-2 py-1 text-sm flex-1 min-w-0 focus:outline-none focus:border-black">
                     <input type="text" name="status" value="{{ $user->status }}" placeholder="—" class="border border-neutral-200 rounded px-2 py-1 text-sm flex-1 min-w-0 focus:outline-none focus:border-black">
                     <select name="role" class="border border-neutral-200 rounded px-2 py-1 text-sm w-28 focus:outline-none focus:border-black" @disabled($user->id === auth()->id())>
-                        @foreach (['user', 'moderator', 'admin'] as $role)
-                            <option value="{{ $role }}" @selected($user->role === $role)>{{ $role }}</option>
+                        @foreach (['user' => 'Пользователь', 'moderator' => 'Модератор', 'admin' => 'Администратор'] as $roleValue => $roleLabel)
+                            <option value="{{ $roleValue }}" @selected($user->role === $roleValue)>{{ $roleLabel }}</option>
                         @endforeach
                     </select>
                     <button type="submit" class="w-24 text-xs border border-neutral-200 rounded px-2 py-1 hover:bg-neutral-50 shrink-0">Сохранить</button>

@@ -62,6 +62,15 @@ class User extends Authenticatable
         };
     }
 
+    public function roleLabel(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Администратор',
+            'moderator' => 'Модератор',
+            default => 'Пользователь',
+        };
+    }
+    
     public function avatarUrl(): ?string
     {
         return $this->avatar ? asset('storage/'.$this->avatar) : null;

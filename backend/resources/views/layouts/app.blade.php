@@ -61,7 +61,7 @@
                                     <x-avatar :user="auth()->user()" class="w-10 h-10 text-sm" />
                                     <div class="min-w-0">
                                         <x-username :user="auth()->user()" class="text-sm block truncate" :link="false" :card="false" />
-                                        <div class="text-[11px] text-neutral-400 leading-tight">{{ auth()->user()->role }}</div>
+                                        <div class="text-[11px] text-neutral-400 leading-tight">{{ auth()->user()->roleLabel() }}</div>
                                     </div>
                                 </a>
                                 <div class="h-px bg-neutral-200 my-1.5"></div>
@@ -130,7 +130,7 @@
                             <x-avatar :user="$sidebarUser" class="w-7 h-7 text-[11px]" />
                             <div class="min-w-0">
                                 <x-username :user="$sidebarUser" class="text-sm block truncate" :link="false" />
-                                <div class="text-[11px] text-neutral-400 leading-tight">{{ $sidebarUser->role }}</div>
+                                <div class="text-[11px] text-neutral-400 leading-tight">{{ $sidebarUser->roleLabel() }}</div>
                             </div>
                         </a>
                     @endforeach

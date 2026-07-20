@@ -43,7 +43,7 @@
                     @endif
                 </div>
 
-                @if ($post->moderation_status !== 'approved')
+                @if (! is_null($post->confidence_score))
                     <div class="text-right shrink-0">
                         <div class="text-sm font-semibold {{ $score >= 0.8 ? 'text-red-600' : ($score >= 0.5 ? 'text-amber-600' : 'text-neutral-500') }}">{{ number_format($score * 100, 1) }}%</div>
                         <div class="text-[10px] text-neutral-400 uppercase tracking-wide">токсичность</div>
@@ -51,9 +51,9 @@
                 @endif
             </div>
 
-            @if ($post->moderation_status !== 'approved')
+            @if (! is_null($post->confidence_score))
                 <div class="h-1 bg-neutral-100 rounded-full overflow-hidden mb-3">
-                    <div class="h-full rounded-full {{ $score >= 0.8 ? 'bg-red-500' : ($score >= 0.5 ? 'bg-amber-500' : 'bg-neutral-400') }}" style="width: {{ min(100, $score * 100) }}%"></div>
+                    <div class="h-full rounded-full {{ $score >= 0.8 ? 'bg-red-500' : ($score >= 0.5 ? 'bg-amber-500' : 'bg-neutral-400') }}" style="width: {{ max(1, min(100, $score * 100)) }}%"></div>
                 </div>
             @endif
 

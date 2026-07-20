@@ -36,7 +36,7 @@
             </nav>
 
             <div class="px-4 py-3 border-t border-neutral-200 text-xs text-neutral-500">
-                {{ auth()->user()->name }} &middot; {{ auth()->user()->role }}
+                {{ auth()->user()->name }} &middot; {{ auth()->user()->roleLabel() }}
             </div>
         </aside>
 
