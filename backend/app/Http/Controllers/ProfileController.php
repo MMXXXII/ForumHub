@@ -56,4 +56,23 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.show', $user)->with('status', 'Профиль обновлён.');
     }
+
+    public function card(User $user)
+    {
+        $user->loadCount(['posts', 'topics']);
+
+        return response()->json([
+            'name' => $user->name,
+            'url' => route('profile.show', $user),
+            'avatar' => $user->avatarUrl(),
+            'initial' => mb_strtoupper(mb_substr($user->name, 0, 1)),
+            'role' => $user->role,
+            'color' => $user->roleColor(),
+            'status' => $user->status,
+            'topics' => $user->topics_count,
+            'posts' => $user->posts_count,
+            'joined' => $user->created_at->format('d.m.Y'),
+            'banned' => $user->isBanned(),
+        ]);
+    }
 }

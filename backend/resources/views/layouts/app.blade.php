@@ -51,20 +51,23 @@
                     @endif
 
                     <div class="relative group">
-                        <button type="button" class="flex items-center gap-2 hover:bg-neutral-100 rounded-lg px-2 py-1.5 transition">
+                        <div class="flex items-center gap-2 hover:bg-neutral-100 rounded-lg px-2 py-1.5 transition cursor-default">
                             <x-avatar :user="auth()->user()" class="w-7 h-7 text-xs" />
-                            <x-username :user="auth()->user()" class="text-sm hidden sm:block" :link="false" />
-                            <i class="ti ti-chevron-down text-xs text-neutral-400"></i>
-                        </button>
+                            <x-username :user="auth()->user()" class="text-sm hidden sm:block" :link="false" :card="false" />
+                        </div>
                         <div class="hidden group-hover:block absolute right-0 top-full pt-2 z-50">
-                            <div class="bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 min-w-[190px]">
-                                <a href="{{ route('profile.show', auth()->user()) }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
-                                    <i class="ti ti-user text-base text-neutral-400"></i> Мой профиль
+                            <div class="bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 min-w-[210px]">
+                                <a href="{{ route('profile.show', auth()->user()) }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 transition">
+                                    <x-avatar :user="auth()->user()" class="w-10 h-10 text-sm" />
+                                    <div class="min-w-0">
+                                        <x-username :user="auth()->user()" class="text-sm block truncate" :link="false" :card="false" />
+                                        <div class="text-[11px] text-neutral-400 leading-tight">{{ auth()->user()->role }}</div>
+                                    </div>
                                 </a>
+                                <div class="h-px bg-neutral-200 my-1.5"></div>
                                 <a href="{{ route('settings.profile') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
                                     <i class="ti ti-settings text-base text-neutral-400"></i> Настройки
                                 </a>
-                                <div class="h-px bg-neutral-200 my-1.5"></div>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
@@ -165,6 +168,8 @@
         </div>
     </div>
 
+    <div id="userCard" class="hidden fixed z-40 w-64 bg-white border border-neutral-200 rounded-xl shadow-lg p-4"></div>
+
     <script>
         function openDeleteModal(action, title, text) {
             const modal = document.getElementById('deleteModal');
@@ -189,6 +194,84 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeDeleteModal();
         });
+
+        (() => {
+            const card = document.getElementById('userCard');
+            const cache = {};
+            let showTimer = null;
+            let hideTimer = null;
+
+            const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+            }[ch]));
+
+            const render = (data) => `
+                <div class="flex items-start gap-3">
+                    ${data.avatar
+                        ? `<img src="${escape(data.avatar)}" alt="" class="w-12 h-12 rounded-lg object-cover bg-neutral-100 shrink-0">`
+                        : `<div class="w-12 h-12 rounded-lg bg-neutral-100 text-neutral-500 flex items-center justify-center text-lg font-semibold shrink-0">${escape(data.initial)}</div>`}
+                    <div class="min-w-0 flex-1">
+                        <a href="${escape(data.url)}" class="font-semibold ${escape(data.color)} hover:underline block truncate">${escape(data.name)}</a>
+                        <div class="text-[11px] text-neutral-400">${escape(data.role)}</div>
+                        ${data.status ? `<div class="text-xs text-neutral-500 mt-1 line-clamp-2">${escape(data.status)}</div>` : ''}
+                    </div>
+                </div>
+                ${data.banned ? '<div class="text-[10px] uppercase tracking-wide bg-red-50 text-red-600 px-1.5 py-0.5 rounded inline-block mt-2">заблокирован</div>' : ''}
+                <div class="text-[11px] text-neutral-400 mt-3 pt-3 border-t border-neutral-100">На форуме с ${escape(data.joined)}</div>
+            `;
+
+            const place = (target) => {
+                const rect = target.getBoundingClientRect();
+                card.classList.remove('hidden');
+
+                const width = card.offsetWidth;
+                const height = card.offsetHeight;
+
+                let left = rect.left;
+                if (left + width > window.innerWidth - 12) left = window.innerWidth - width - 12;
+                if (left < 12) left = 12;
+
+                let top = rect.bottom + 8;
+                if (top + height > window.innerHeight - 12) top = rect.top - height - 8;
+                if (top < 12) top = 12;
+
+                card.style.left = left + 'px';
+                card.style.top = top + 'px';
+            };
+
+            const show = (target) => {
+                let data;
+                try {
+                    data = JSON.parse(target.dataset.usercard);
+                } catch {
+                    return;
+                }
+                card.innerHTML = render(data);
+                place(target);
+            };
+
+            const hide = () => card.classList.add('hidden');
+
+            document.addEventListener('mouseover', (e) => {
+                const target = e.target.closest('[data-usercard]');
+                if (target) {
+                    clearTimeout(hideTimer);
+                    show(target);
+                    return;
+                }
+                if (e.target.closest('#userCard')) {
+                    clearTimeout(hideTimer);
+                }
+            });
+
+            document.addEventListener('mouseout', (e) => {
+                if (e.target.closest('[data-usercard]') || e.target.closest('#userCard')) {
+                    hideTimer = setTimeout(hide, 100);
+                }
+            });
+
+            window.addEventListener('scroll', hide, true);
+        })();
     </script>
 </body>
 </html>
