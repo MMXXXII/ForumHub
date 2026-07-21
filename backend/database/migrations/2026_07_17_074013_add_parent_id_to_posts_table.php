@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             $table->foreignId('parent_id')->nullable()->after('user_id')->constrained('posts')->nullOnDelete();
-     });
+        });
     }
 
     /**

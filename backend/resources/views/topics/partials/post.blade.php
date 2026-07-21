@@ -9,16 +9,32 @@
                     </span>
                 @endif
             </div>
+
             @auth
-                <div class="flex items-center gap-3">
-                    @if (auth()->id() === $post->user_id)
-                        <button type="button" class="text-xs text-neutral-400 hover:text-black" onclick="toggleEdit({{ $post->id }})">Изменить</button>
-                    @endif
-                    @if (auth()->id() === $post->user_id || auth()->user()->isModerator())
-                        <button type="button" class="text-xs text-red-600 hover:underline"
-                            onclick="openDeleteModal('{{ route('posts.destroy', $post) }}', 'Удалить сообщение?', 'Сообщение будет удалено безвозвратно.')">Удалить</button>
-                    @endif
-                </div>
+                @php
+                    $canEdit = auth()->id() === $post->user_id;
+                    $canDelete = $canEdit || auth()->user()->isModerator();
+                @endphp
+                @if ($canEdit || $canDelete)
+                    <div class="relative shrink-0">
+                        <button type="button" class="dropdown-btn text-neutral-400 hover:text-black px-1.5 py-0.5 rounded hover:bg-neutral-100 transition leading-none" data-menu="post-menu-{{ $post->id }}" aria-label="Действия">
+                            <i class="ti ti-dots text-base"></i>
+                        </button>
+                        <div id="post-menu-{{ $post->id }}" class="dropdown-menu hidden absolute right-0 top-full mt-1 z-20 bg-white border border-neutral-200 rounded-lg shadow-lg py-1 min-w-[160px]">
+                            @if ($canEdit)
+                                <button type="button" class="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition" onclick="toggleEdit({{ $post->id }})">
+                                    <i class="ti ti-pencil text-base text-neutral-400"></i> Изменить
+                                </button>
+                            @endif
+                            @if ($canDelete)
+                                <button type="button" class="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-neutral-50 transition"
+                                    onclick="openDeleteModal('{{ route('posts.destroy', $post) }}', 'Удалить сообщение?', 'Сообщение будет удалено безвозвратно.')">
+                                    <i class="ti ti-trash text-base"></i> Удалить
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             @endauth
         </div>
 
@@ -39,9 +55,9 @@
         @endauth
 
         <div class="flex items-center gap-3 mt-2 text-xs text-neutral-400">
-            <span>{{ $post->created_at->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}</span>
+            <x-date :value="$post->created_at" />
             @if ($post->edited_at)
-                <span class="text-neutral-400">изменено {{ $post->edited_at->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}</span>
+                <span>изменено <x-date :value="$post->edited_at" /></span>
             @endif
             @auth
                 @unless ($topic->is_locked)

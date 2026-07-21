@@ -24,7 +24,7 @@ class PostController extends Controller
         if ($search = trim((string) $request->query('q'))) {
             $query->where(function ($q) use ($search) {
                 $q->where('body', 'like', "%{$search}%")
-                  ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
             });
         }
 

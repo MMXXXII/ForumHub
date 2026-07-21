@@ -34,7 +34,7 @@
         <span class="w-10"></span>
         <span class="flex-1">Имя</span>
         <span class="flex-1">Статус</span>
-        <span class="w-28 text-center">Роль</span>
+        <span class="w-36 text-center">Роль</span>
         <span class="w-24"></span>
         <span class="w-8"></span>
     </div>
@@ -51,7 +51,7 @@
                     @method('PATCH')
                     <input type="text" name="name" value="{{ $user->name }}" class="border border-neutral-200 rounded px-2 py-1 text-sm flex-1 min-w-0 focus:outline-none focus:border-black">
                     <input type="text" name="status" value="{{ $user->status }}" placeholder="—" class="border border-neutral-200 rounded px-2 py-1 text-sm flex-1 min-w-0 focus:outline-none focus:border-black">
-                    <select name="role" class="border border-neutral-200 rounded px-2 py-1 text-sm w-28 focus:outline-none focus:border-black" @disabled($user->id === auth()->id())>
+                    <select name="role" class="border border-neutral-200 rounded px-2 py-1 text-sm w-36 focus:outline-none focus:border-black" @disabled($user->id === auth()->id())>
                         @foreach (['user' => 'Пользователь', 'moderator' => 'Модератор', 'admin' => 'Администратор'] as $roleValue => $roleLabel)
                             <option value="{{ $roleValue }}" @selected($user->role === $roleValue)>{{ $roleLabel }}</option>
                         @endforeach
@@ -60,13 +60,10 @@
                 </form>
 
                 @if ($user->id !== auth()->id())
-                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="w-8 shrink-0 flex justify-center" onsubmit="return confirm('Удалить пользователя «{{ $user->name }}» со всеми темами и сообщениями?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-neutral-400 hover:text-red-600 transition" title="Удалить пользователя">
-                            <i class="ti ti-trash text-base"></i>
-                        </button>
-                    </form>
+                    <button type="button" class="w-8 shrink-0 flex justify-center text-neutral-400 hover:text-red-600 transition" title="Удалить пользователя"
+                        onclick="openDeleteModal('{{ route('admin.users.destroy', $user) }}', 'Удалить пользователя?', 'Пользователь «{{ $user->name }}» будет удалён со всеми темами и сообщениями.')">
+                        <i class="ti ti-trash text-base"></i>
+                    </button>
                 @else
                     <span class="w-8 shrink-0"></span>
                 @endif
@@ -77,7 +74,7 @@
                 <span class="text-neutral-300">·</span>
                 <span>{{ $user->email }}</span>
                 <span class="text-neutral-300">·</span>
-                <span>рег. {{ $user->created_at->timezone('Asia/Irkutsk')->format('d.m.Y') }}</span>
+                <span>рег. <x-date :value="$user->created_at" format="d.m.Y" /></span>
                 <span class="text-neutral-300">·</span>
                 <span>{{ $user->topics_count }} тем</span>
                 <span class="text-neutral-300">·</span>
@@ -85,7 +82,7 @@
 
                 @if ($user->isBanned())
                     <span class="text-red-600 font-medium">
-                        заблокирован {{ $user->isPermanentlyBanned() ? 'навсегда' : 'до '.$user->banned_until->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}
+                        заблокирован @if ($user->isPermanentlyBanned()) навсегда @else до <x-date :value="$user->banned_until" /> @endif
                         @if ($user->ban_reason) — {{ $user->ban_reason }} @endif
                     </span>
                     <form method="POST" action="{{ route('admin.users.unban', $user) }}">

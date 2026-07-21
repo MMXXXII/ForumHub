@@ -60,10 +60,10 @@
             <div class="text-sm text-neutral-800 whitespace-pre-line leading-relaxed {{ $post->moderation_status !== 'approved' ? 'bg-neutral-50 rounded-lg px-3 py-2' : '' }}">{{ $post->body }}</div>
 
             <div class="flex items-center justify-between mt-3">
-                <div class="text-xs text-neutral-400">
+                <div class="w-24 text-center text-xs text-neutral-400 shrink-0"><x-date :value="$topic->created_at" format="d.m.Y" /></div>
                     ID {{ $post->id }}
                     <span class="text-neutral-300 mx-1">&middot;</span>
-                    {{ $post->created_at->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}
+                    <x-date :value="$post->created_at" />
                 </div>
 
                 <div class="flex items-center gap-2">

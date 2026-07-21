@@ -8,7 +8,7 @@
 
             <div class="min-w-0 flex-1 pt-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <h1 class="text-3xl font-bold {{ $user->roleLabel() }} tracking-tight leading-none">{{ $user->name }}</h1>
+                    <h1 class="text-3xl font-bold {{ $user->roleColor() }} tracking-tight leading-none">{{ $user->name }}</h1>
                     @if ($user->isBanned())
                         <span class="text-[10px] font-semibold uppercase tracking-wide bg-red-50 text-red-600 px-2 py-0.5 rounded">заблокирован</span>
                     @endif
@@ -113,18 +113,25 @@
                             @endphp
                             @if ($canPin || $canDelete)
                                 <div class="relative shrink-0">
-                                    <button type="button" class="wall-menu-btn text-neutral-400 hover:text-black px-1 leading-none" data-menu="wall-menu-{{ $wallPost->id }}">&middot;&middot;&middot;</button>
-                                    <div id="wall-menu-{{ $wallPost->id }}" class="wall-menu hidden absolute right-0 top-full mt-1 z-20 bg-white border border-neutral-200 rounded-lg shadow-sm py-1 min-w-[150px]">
+                                    <button type="button" class="dropdown-btn text-neutral-400 hover:text-black px-1.5 py-0.5 rounded hover:bg-neutral-100 transition leading-none" data-menu="wall-menu-{{ $wallPost->id }}" aria-label="Действия">
+                                        <i class="ti ti-dots text-base"></i>
+                                    </button>
+                                    <div id="wall-menu-{{ $wallPost->id }}" class="dropdown-menu hidden absolute right-0 top-full mt-1 z-20 bg-white border border-neutral-200 rounded-lg shadow-lg py-1 min-w-[160px]">
                                         @if ($canPin)
                                             <form method="POST" action="{{ route('wall.pin', $wallPost) }}">
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="block w-full text-left px-3 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black">{{ $wallPost->is_pinned ? 'Открепить' : 'Закрепить' }}</button>
+                                                <button type="submit" class="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition">
+                                                    <i class="ti {{ $wallPost->is_pinned ? 'ti-pinned-off' : 'ti-pin' }} text-base text-neutral-400"></i>
+                                                    {{ $wallPost->is_pinned ? 'Открепить' : 'Закрепить' }}
+                                                </button>
                                             </form>
                                         @endif
                                         @if ($canDelete)
-                                            <button type="button" class="block w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-neutral-50"
-                                                onclick="openDeleteModal('{{ route('wall.destroy', $wallPost) }}', 'Удалить сообщение?', 'Сообщение будет удалено со стены безвозвратно.')">Удалить</button>
+                                            <button type="button" class="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-neutral-50 transition"
+                                                onclick="openDeleteModal('{{ route('wall.destroy', $wallPost) }}', 'Удалить сообщение?', 'Сообщение будет удалено со стены безвозвратно.')">
+                                                <i class="ti ti-trash text-base"></i> Удалить
+                                            </button>
                                         @endif
                                     </div>
                                 </div>
@@ -134,7 +141,7 @@
 
                     <div class="text-sm text-neutral-800 whitespace-pre-line leading-relaxed mt-1">{{ $wallPost->body }}</div>
                     <div class="flex items-center gap-3 text-xs text-neutral-400 mt-1">
-                        <span>{{ $wallPost->created_at->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}</span>
+                        <x-date :value="$wallPost->created_at" />
                         @auth
                             <button type="button" class="hover:text-black" onclick="document.getElementById('wall-reply-{{ $wallPost->id }}').classList.toggle('hidden')">Ответить</button>
                         @endauth
@@ -156,7 +163,7 @@
                                             @endauth
                                         </div>
                                         <div class="text-sm text-neutral-800 whitespace-pre-line leading-relaxed">{{ $reply->body }}</div>
-                                        <div class="text-xs text-neutral-400 mt-0.5">{{ $reply->created_at->timezone('Asia/Irkutsk')->format('d.m.Y H:i') }}</div>
+                                        <div class="text-xs text-neutral-400 mt-0.5"><x-date :value="$reply->created_at" /></div>
                                     </div>
                                 </div>
                             @endforeach
@@ -182,16 +189,4 @@
 
     <div class="mt-4">{{ $wallPosts->links() }}</div>
 </div>
-
-<script>
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('.wall-menu-btn');
-        document.querySelectorAll('.wall-menu').forEach(m => {
-            if (!btn || m.id !== btn.dataset.menu) m.classList.add('hidden');
-        });
-        if (btn) {
-            document.getElementById(btn.dataset.menu)?.classList.toggle('hidden');
-        }
-    });
-</script>
 @endsection

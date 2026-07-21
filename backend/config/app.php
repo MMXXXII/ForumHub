@@ -77,6 +77,7 @@ return [
     | set to any locale for which you plan to have translation strings.
     |
     */
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Asia/Irkutsk'),
 
     'locale' => env('APP_LOCALE', 'en'),
 

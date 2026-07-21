@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('wall_posts', function (Blueprint $table) {
-        $table->foreignId('parent_id')->nullable()->after('author_id')->constrained('wall_posts')->cascadeOnDelete();
-    });
+            $table->foreignId('parent_id')->nullable()->after('author_id')->constrained('wall_posts')->cascadeOnDelete();
+        });
     }
 
     /**
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('wall_posts', function (Blueprint $table) {
-        $table->dropConstrainedForeignId('parent_id');
-    });
+            $table->dropConstrainedForeignId('parent_id');
+        });
     }
 };

@@ -37,7 +37,8 @@ class SettingsController extends Controller
             foreach ($domains as $domain) {
                 $value = preg_replace('~^(www\.)?'.preg_quote($domain, '~').'/~i', '', $value);
             }
-            return trim($value, " /@");
+
+            return trim($value, ' /@');
         };
 
         $request->merge([
@@ -45,7 +46,7 @@ class SettingsController extends Controller
             'vk' => $strip($request->input('vk'), ['vk.com', 'vk.ru', 'm.vk.com']),
             'steam' => $strip($request->input('steam'), ['steamcommunity.com/id', 'steamcommunity.com/profiles', 'steamcommunity.com']),
         ]);
-        
+
         $validated = $request->validate([
             'status' => ['nullable', 'string', 'max:100'],
             'birthday' => ['nullable', 'date', 'before:today', 'after:1920-01-01'],

@@ -12,17 +12,16 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\WallPostController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SearchController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/c/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 Route::get('/t/{topic:slug}', [TopicController::class, 'show'])->name('topics.show');
 Route::get('/u/{user}', [ProfileController::class, 'show'])->name('profile.show');
-Route::get('/u/{user}/card', [ProfileController::class, 'card'])->name('profile.card');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 Route::middleware('auth')->group(function () {

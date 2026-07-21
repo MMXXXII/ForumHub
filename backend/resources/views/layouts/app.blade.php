@@ -188,6 +188,16 @@
             document.getElementById('edit-form-' + id)?.classList.toggle('hidden');
             document.getElementById('post-body-' + id)?.classList.toggle('hidden');
         }
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.dropdown-btn');
+            document.querySelectorAll('.dropdown-menu').forEach((menu) => {
+                if (!btn || menu.id !== btn.dataset.menu) menu.classList.add('hidden');
+            });
+            if (btn) {
+                document.getElementById(btn.dataset.menu)?.classList.toggle('hidden');
+            }
+        });
         document.addEventListener('click', (e) => {
             if (e.target.id === 'deleteModal') closeDeleteModal();
         });

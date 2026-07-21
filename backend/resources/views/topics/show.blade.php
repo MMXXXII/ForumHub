@@ -18,7 +18,7 @@
     <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-400">
         <span>Автор: <x-username :user="$topic->user" class="text-xs" /></span>
         <span>·</span>
-        <span>{{ $topic->created_at->timezone('Asia/Irkutsk')->format('d.m.Y, H:i') }}</span>
+        <x-date :value="$topic->created_at" format="d.m.Y, H:i" />
         <span>·</span>
         <span>{{ $topic->views }} просмотров</span>
         @if ($topic->is_locked)
@@ -29,14 +29,13 @@
 
     @auth
         @if (auth()->id() === $topic->user_id || auth()->user()->isModerator())
-            <button type="button" class="mt-3 text-xs text-red-600 hover:underline"
+            <button type="button" class="mt-3 text-xs text-neutral-400 hover:text-red-600 transition"
                 onclick="openDeleteModal('{{ route('topics.destroy', $topic) }}', 'Удалить тему?', 'Тема и все сообщения будут удалены безвозвратно.')">Удалить тему</button>
         @endif
     @endauth
 </div>
 
-
-<div class="space-y-3">
+<div>
     @forelse ($rootPosts as $post)
         @include('topics.partials.post', ['post' => $post, 'depth' => 0])
     @empty
@@ -93,7 +92,7 @@
             });
         });
 
-            document.getElementById('cancelReply')?.addEventListener('click', () => {
+        document.getElementById('cancelReply')?.addEventListener('click', () => {
             parentInput.value = '';
             banner.classList.add('hidden');
             banner.classList.remove('flex');

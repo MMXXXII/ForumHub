@@ -10,6 +10,7 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = ['topic_id', 'user_id', 'parent_id', 'body', 'edited_at', 'moderation_status', 'confidence_score'];
+
     public function topic()
     {
         return $this->belongsTo(Topic::class);

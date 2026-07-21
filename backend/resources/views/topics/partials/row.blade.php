@@ -1,4 +1,4 @@
-<a href="{{ route('topics.show', $topic) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-neutral-200 last:border-b-0 hover:bg-neutral-50 transition group">
+<a href="{{ route('topics.show', $topic) }}" class="flex items-center gap-3 px-4 py-3 border-b border-neutral-200 last:border-b-0 hover:bg-neutral-50 transition group">
     <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5">
             @if ($topic->is_locked)
@@ -22,6 +22,6 @@
     </div>
 
     <div class="w-24 text-right text-xs text-neutral-400 shrink-0 hidden sm:block">
-        {{ \Illuminate\Support\Carbon::parse($topic->posts_max_created_at ?? $topic->created_at)->timezone('Asia/Irkutsk')->diffForHumans() }}
+        <x-date :value="$topic->posts_max_created_at ?? $topic->created_at" :human="true" />
     </div>
 </a>

@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-    $table->timestamp('banned_until')->nullable();
-    $table->string('ban_reason')->nullable();
-});
+            $table->timestamp('banned_until')->nullable();
+            $table->string('ban_reason')->nullable();
+        });
     }
 
     /**
@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-    $table->dropColumn(['banned_until', 'ban_reason']);
-});
+            $table->dropColumn(['banned_until', 'ban_reason']);
+        });
     }
 };

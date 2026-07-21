@@ -31,7 +31,7 @@ class User extends Authenticatable
             'two_factor_expires_at' => 'datetime',
             'birthday' => 'date',
         ];
-    } 
+    }
 
     public function topics()
     {
@@ -70,7 +70,7 @@ class User extends Authenticatable
             default => 'Пользователь',
         };
     }
-    
+
     public function avatarUrl(): ?string
     {
         return $this->avatar ? asset('storage/'.$this->avatar) : null;
@@ -101,5 +101,3 @@ class User extends Authenticatable
         ]);
     }
 }
-
-

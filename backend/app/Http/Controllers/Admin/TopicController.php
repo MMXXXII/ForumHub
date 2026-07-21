@@ -3,15 +3,47 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Topic;
+use Illuminate\Http\Request;
 
 class TopicController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $topics = Topic::withCount('posts')->with(['user', 'category'])->orderByDesc('created_at')->paginate(30);
+        $query = Topic::withCount('posts')->with(['user', 'category']);
 
-        return view('admin.topics.index', compact('topics'));
+        if ($search = trim((string) $request->query('q'))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($categoryId = $request->query('category')) {
+            $query->where('category_id', $categoryId);
+        }
+
+        match ($request->query('filter')) {
+            'pinned' => $query->where('is_pinned', true),
+            'locked' => $query->where('is_locked', true),
+            default => null,
+        };
+
+        $topics = $query->orderByDesc('is_pinned')
+            ->orderByDesc('created_at')
+            ->paginate(25)
+            ->withQueryString();
+
+        $categories = Category::orderBy('order')->get();
+
+        $counts = [
+            'all' => Topic::count(),
+            'pinned' => Topic::where('is_pinned', true)->count(),
+            'locked' => Topic::where('is_locked', true)->count(),
+        ];
+
+        return view('admin.topics.index', compact('topics', 'categories', 'counts'));
     }
 
     public function togglePin(Topic $topic)
@@ -30,6 +62,7 @@ class TopicController extends Controller
 
     public function destroy(Topic $topic)
     {
+        $topic->posts()->delete();
         $topic->delete();
 
         return back()->with('status', 'Тема удалена.');
