@@ -61,7 +61,7 @@ class PostController extends Controller
         return back()->with('status', 'Сообщение добавлено.');
     }
 
-    public function update(Request $request, Post $post)
+    public function update(Request $request, Post $post, ModerationService $moderation)
     {
         if ($request->user()->id !== $post->user_id) {
             abort(403);
@@ -71,10 +71,19 @@ class PostController extends Controller
             'body' => ['required', 'string', 'max:10000'],
         ]);
 
+        $verdict = $moderation->check($validated['body']);
+
         $post->update([
             'body' => $validated['body'],
             'edited_at' => now(),
+            'moderation_status' => $verdict['status'],
+            'confidence_score' => $verdict['score'],
         ]);
+
+        if ($verdict['status'] === 'rejected') {
+            return redirect()->route('topics.show', $post->topic)
+                ->with('warning', 'Изменённое сообщение отправлено на проверку модератору: система обнаружила возможное нарушение правил.');
+        }
 
         return redirect()->route('topics.show', $post->topic)->with('status', 'Сообщение изменено.');
     }
