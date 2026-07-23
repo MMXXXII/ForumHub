@@ -21,6 +21,10 @@
                             <i class="ti ti-dots text-base"></i>
                         </button>
                         <div id="post-menu-{{ $post->id }}" class="dropdown-menu hidden absolute right-0 top-full mt-1 z-20 bg-white border border-neutral-200 rounded-lg shadow-lg py-1 min-w-[160px]">
+                            <button type="button" class="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition"
+                                onclick="copyPostLink('{{ route('topics.show', $topic) }}#post-{{ $post->id }}')">
+                                <i class="ti ti-link text-base text-neutral-400"></i> Скопировать ссылку
+                            </button>
                             @if ($canEdit)
                                 <button type="button" class="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-black transition" onclick="toggleEdit({{ $post->id }})">
                                     <i class="ti ti-pencil text-base text-neutral-400"></i> Изменить

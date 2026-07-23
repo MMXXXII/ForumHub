@@ -1,2 +1,12 @@
 @import "tailwindcss";
 @import "@tabler/icons-webfont/dist/tabler-icons.min.css";
+
+@keyframes post-flash {
+    0%   { background-color: rgba(115, 115, 115, 0.18); }
+    100% { background-color: transparent; }
+}
+
+.post-highlight {
+    animation: post-flash 2.5s ease-out;
+    border-radius: 8px;
+}

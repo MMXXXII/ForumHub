@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'ForumHub')</title>
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -210,6 +211,12 @@
 
     <div id="userCard" class="hidden fixed z-40 w-64 bg-white border border-neutral-200 rounded-xl shadow-lg p-4"></div>
 
+    <button type="button" id="scrollTop" class="fixed bottom-6 right-6 z-30 w-11 h-11 rounded-xl bg-black text-white shadow-lg flex items-center justify-center opacity-0 invisible translate-y-2 transition-all duration-200 hover:bg-neutral-800" aria-label="Наверх">
+        <i class="ti ti-arrow-up text-lg"></i>
+    </button>
+
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-black text-white text-sm px-4 py-2.5 rounded-xl shadow-lg opacity-0 translate-y-2 transition-all duration-200 pointer-events-none"></div>
+
     <script>
         function openDeleteModal(action, title, text) {
             const modal = document.getElementById('deleteModal');
@@ -227,6 +234,20 @@
         function toggleEdit(id) {
             document.getElementById('edit-form-' + id)?.classList.toggle('hidden');
             document.getElementById('post-body-' + id)?.classList.toggle('hidden');
+        }
+
+        function copyPostLink(url) {
+            navigator.clipboard.writeText(url).then(() => showToast('Ссылка скопирована'));
+            document.querySelectorAll('.dropdown-menu').forEach((m) => m.classList.add('hidden'));
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = text;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.add('opacity-0', 'translate-y-2'), 2000);
         }
 
         document.addEventListener('click', (e) => {
@@ -331,6 +352,23 @@
             });
 
             window.addEventListener('scroll', hide, true);
+        })();
+
+        (() => {
+            const highlight = () => {
+                const id = window.location.hash;
+                if (!id || !id.startsWith('#post-')) return;
+
+                const el = document.querySelector(id);
+                if (!el) return;
+
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('post-highlight');
+                setTimeout(() => el.classList.remove('post-highlight'), 2500);
+            };
+
+            window.addEventListener('DOMContentLoaded', highlight);
+            window.addEventListener('hashchange', highlight);
         })();
     </script>
 </body>
