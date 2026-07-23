@@ -41,4 +41,8 @@ return [
         'enabled' => env('MODERATION_ENABLED', true),
     ],
 
+    'two_factor' => [
+        'enabled' => env('TWO_FACTOR_ENABLED', false),
+    ],
+
 ];

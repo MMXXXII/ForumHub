@@ -32,6 +32,13 @@ class LoginController extends Controller
             ])->onlyInput('email');
         }
 
+        if (! config('services.two_factor.enabled')) {
+            Auth::login($user, $request->boolean('remember'));
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('home'));
+        }
+
         $code = (string) random_int(100000, 999999);
 
         $user->forceFill([
@@ -50,7 +57,6 @@ class LoginController extends Controller
     public function destroy(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
