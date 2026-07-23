@@ -100,4 +100,14 @@ class User extends Authenticatable
             'Сайт' => $this->website,
         ]);
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->latest();
+    }
+
+    public function unreadNotificationsCount(): int
+    {
+        return $this->notifications()->whereNull('read_at')->count();
+    }
 }

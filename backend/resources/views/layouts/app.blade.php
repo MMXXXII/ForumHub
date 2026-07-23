@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'ForumHub')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-white text-neutral-900 min-h-screen antialiased">
@@ -49,6 +50,45 @@
                             <span class="hidden lg:inline">Панель</span>
                         </a>
                     @endif
+
+                    <div class="relative group" id="notifBell">
+                        <a href="{{ route('notifications.index') }}" class="relative flex items-center text-neutral-600 hover:text-black hover:bg-neutral-100 rounded-lg px-2.5 py-2 transition">
+                            <i class="ti ti-bell text-lg"></i>
+                            @if (($navUnreadCount ?? 0) > 0)
+                                <span id="notifBadge" class="absolute top-1 right-1.5 min-w-[16px] h-4 px-1 bg-red-600 text-white text-[10px] font-semibold rounded-full flex items-center justify-center">{{ $navUnreadCount > 9 ? '9+' : $navUnreadCount }}</span>
+                            @endif
+                        </a>
+                        <div class="hidden group-hover:block absolute right-0 top-full pt-2 z-50">
+                            <div class="bg-white border border-neutral-200 rounded-xl shadow-lg w-80 overflow-hidden">
+                                <div class="flex items-center justify-between px-4 py-2.5 border-b border-neutral-200">
+                                    <span class="text-sm font-semibold text-black">Уведомления</span>
+                                    @if (($navUnreadCount ?? 0) > 0)
+                                        <span class="text-[11px] text-neutral-400">{{ $navUnreadCount }} новых</span>
+                                    @endif
+                                </div>
+                                <div class="max-h-96 overflow-y-auto">
+                                    @forelse (($navNotifications ?? []) as $note)
+                                        <a href="{{ $note->url }}" class="flex gap-2.5 px-4 py-2.5 hover:bg-neutral-50 transition border-b border-neutral-100 last:border-b-0 {{ $note->read_at ? '' : 'bg-blue-50/40' }}">
+                                            <x-avatar :user="$note->actor" class="w-8 h-8 text-xs shrink-0" />
+                                            <div class="min-w-0">
+                                                <div class="text-sm text-neutral-800">
+                                                    <span class="font-medium">{{ $note->actor->name }}</span>
+                                                    {{ $note->type === 'wall' ? 'написал на вашей стене' : 'ответил вам' }}
+                                                </div>
+                                                @if ($note->preview)
+                                                    <div class="text-xs text-neutral-400 truncate">{{ $note->preview }}</div>
+                                                @endif
+                                                <div class="text-[11px] text-neutral-400 mt-0.5"><x-date :value="$note->created_at" :human="true" /></div>
+                                            </div>
+                                        </a>
+                                    @empty
+                                        <div class="px-4 py-8 text-center text-sm text-neutral-400">Пока нет уведомлений</div>
+                                    @endforelse
+                                </div>
+                                <a href="{{ route('notifications.index') }}" class="block px-4 py-2.5 text-center text-sm text-neutral-600 hover:text-black hover:bg-neutral-50 border-t border-neutral-200 transition">Все уведомления</a>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="relative group">
                         <div class="flex items-center gap-2 hover:bg-neutral-100 rounded-lg px-2 py-1.5 transition cursor-default">
@@ -206,14 +246,28 @@
         });
 
         (() => {
-            const card = document.getElementById('userCard');
-            const cache = {};
-            let showTimer = null;
-            let hideTimer = null;
+            const bell = document.getElementById('notifBell');
+            if (!bell) return;
+            let marked = false;
+            bell.addEventListener('mouseenter', () => {
+                if (marked) return;
+                marked = true;
+                fetch('{{ route('notifications.read') }}', {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                        'Accept': 'application/json',
+                    },
+                }).then(() => document.getElementById('notifBadge')?.remove());
+            });
+        })();
 
+        (() => {
+            const card = document.getElementById('userCard');
             const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
             }[ch]));
+            let hideTimer = null;
 
             const render = (data) => `
                 <div class="flex items-start gap-3">
@@ -233,18 +287,14 @@
             const place = (target) => {
                 const rect = target.getBoundingClientRect();
                 card.classList.remove('hidden');
-
                 const width = card.offsetWidth;
                 const height = card.offsetHeight;
-
                 let left = rect.left;
                 if (left + width > window.innerWidth - 12) left = window.innerWidth - width - 12;
                 if (left < 12) left = 12;
-
                 let top = rect.bottom + 8;
                 if (top + height > window.innerHeight - 12) top = rect.top - height - 8;
                 if (top < 12) top = 12;
-
                 card.style.left = left + 'px';
                 card.style.top = top + 'px';
             };

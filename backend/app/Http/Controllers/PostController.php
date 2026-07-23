@@ -29,13 +29,26 @@ class PostController extends Controller
 
         $verdict = $moderation->check($validated['body']);
 
-        $topic->posts()->create([
+        $post = $topic->posts()->create([
             'user_id' => $request->user()->id,
             'parent_id' => $validated['parent_id'] ?? null,
             'body' => $validated['body'],
             'moderation_status' => $verdict['status'],
             'confidence_score' => $verdict['score'],
         ]);
+
+        if (! empty($validated['parent_id']) && $verdict['status'] === 'approved') {
+            $parent = Post::find($validated['parent_id']);
+            if ($parent && $parent->user_id !== $request->user()->id) {
+                \App\Models\Notification::create([
+                    'user_id' => $parent->user_id,
+                    'actor_id' => $request->user()->id,
+                    'type' => 'reply',
+                    'url' => route('topics.show', $topic).'#post-'.$post->id,
+                    'preview' => \Illuminate\Support\Str::limit($validated['body'], 80),
+                ]);
+            }
+        }
 
         if ($verdict['status'] === 'rejected') {
             return back()->with('warning', 'Сообщение отправлено на проверку модератору: система обнаружила возможное нарушение правил.');

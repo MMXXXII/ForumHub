@@ -32,6 +32,16 @@ class WallPostController extends Controller
             'parent_id' => $validated['parent_id'] ?? null,
             'body' => $validated['body'],
         ]);
+        
+        if ($request->user()->id !== $user->id) {
+            \App\Models\Notification::create([
+                'user_id' => $user->id,
+                'actor_id' => $request->user()->id,
+                'type' => 'wall',
+                'url' => route('profile.show', $user),
+                'preview' => \Illuminate\Support\Str::limit($validated['body'], 80),
+            ]);
+        }
 
         return back()->with('status', 'Сообщение оставлено.');
     }

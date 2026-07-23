@@ -17,6 +17,8 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\WallPostController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
@@ -38,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/u/{user}/wall', [WallPostController::class, 'store'])->middleware('throttle:10,1')->name('wall.store');
     Route::patch('/wall/{wallPost}/pin', [WallPostController::class, 'togglePin'])->name('wall.pin');
     Route::delete('/wall/{wallPost}', [WallPostController::class, 'destroy'])->name('wall.destroy');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/read', [NotificationController::class, 'readAll'])->name('notifications.read');
 });
 
 Route::middleware('guest')->group(function () {
